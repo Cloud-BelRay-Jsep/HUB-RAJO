@@ -396,15 +396,25 @@
     }
     var gStart = {};
     GROUPS.forEach(function (g) { var ps = plantsOfGroup(g.id); if (ps.length) gStart[ps[0].id] = true; });
-    var body = '<tbody>' + C.modules.map(function (m) {
+    /* Filas agrupadas por línea de negocio: un encabezado sobre los módulos de cada pilar */
+    function catRow(cat, mods) {
+      return '<tr class="mx-cat"><th scope="rowgroup" id="mxcat-' + cat.id + '">' + esc(cat.name) +
+        '<small>' + mods.length + (mods.length === 1 ? ' módulo' : ' módulos') + '</small></th>' +
+        C.plants.map(function (p) { return '<td data-col="' + p.id + '"' + (gStart[p.id] ? ' class="g-start"' : '') + ' aria-hidden="true"></td>'; }).join('') + '</tr>';
+    }
+    var body = '<tbody>' + C.categories.map(function (cat) {
+      var mods = C.modules.filter(function (m) { return m.category === cat.id; });
+      return mods.length ? catRow(cat, mods) + mods.map(moduleRow).join('') : '';
+    }).join('') + '</tbody>';
+    function moduleRow(m) {
       var n = viewsOf(m).length;
-      return '<tr><th scope="row">' + esc(m.name) + (n > 1 ? '<small>' + n + ' tableros</small>' : '') + '</th>' +
+      return '<tr class="mx-mod" data-cat="' + esc(m.category) + '"><th scope="row" headers="mxcat-' + esc(m.category) + '">' + esc(m.name) + (n > 1 ? '<small>' + n + ' tableros</small>' : '') + '</th>' +
         C.plants.map(function (p) {
           var s = statusOf(m, p.id);
           var label = m.name + ' en ' + p.name + ': ' + labelOf(m, s).toLowerCase() + (isOpen(s) ? ' — abrir' : '');
           return '<td data-col="' + p.id + '"' + (gStart[p.id] ? ' class="g-start"' : '') + '><button class="mx-cell" type="button" data-s="' + s + '" data-module="' + m.id + '" data-plant="' + p.id + '" aria-label="' + esc(label) + '" title="' + esc(label) + '"><span class="mark mark--' + s + '"></span></button></td>';
         }).join('') + '</tr>';
-    }).join('') + '</tbody>';
+    }
     tb.innerHTML = head + body;
     tb.classList.toggle('matrix__table--grouped', !!GROUPS.length);
     tb.style.setProperty('--cols', C.plants.length);
