@@ -1,0 +1,1216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0A1220">
+<title>LubeCalc Pro · Shovel Edition</title>
+<style>/* ── LubeCalc Pro v4 · sistema de diseño ───────────────────────────── */
+:root{
+  --bg:#0A1220; --bg-2:#0D1727; --surface:#121D31; --surface-2:#172540; --surface-3:#1D2E4D;
+  --line:#243451; --line-2:#2F4367;
+  --text:#E9EFF8; --text-2:#B4C2D6; --muted:#8597B2; --muted-2:#7287A4;
+  --amber:#F5B324; --amber-2:#FFD066; --amber-ink:#1A1200;
+  --steel:#7F97BC; --steel-2:#A9BCDA;
+  --ok:#4ECB8D; --ok-ink:#07301C; --warn:#FF8A5B; --bad:#FF6B6B; --info:#4FA3FF;
+  --A1:#F5B324; --A2:#4FA3FF; --B1:#FFD066; --B2:#5CD68A; --C1:#FF8A5B; --C2:#FF6B6B;
+  --r:14px; --r-sm:10px; --r-xs:7px;
+  --font:"IBM Plex Sans","Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+  --display:"Bahnschrift","Barlow Condensed","Avenir Next Condensed","Roboto Condensed","Arial Narrow",system-ui,sans-serif;
+  --shadow:0 10px 30px -14px rgba(0,0,0,.6), 0 2px 6px -2px rgba(0,0,0,.4);
+  --ease:cubic-bezier(.2,.8,.2,1);
+}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+body{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+::selection{background:rgba(245,179,36,.35);color:#fff}
+*{scrollbar-width:thin;scrollbar-color:var(--line-2) transparent}
+*::-webkit-scrollbar{height:8px;width:8px}*::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:8px}
+:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:6px}
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0;padding:0;touch-action:manipulation}
+input,select{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums lining-nums}
+.disp{font-family:var(--display);letter-spacing:-.01em;font-variant-numeric:tabular-nums lining-nums}
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* layout */
+.wrap{max-width:1180px;margin:0 auto;padding:0 14px}
+@media(min-width:720px){.wrap{padding:0 22px}}
+main{display:grid;gap:18px}
+main.wrap{padding-top:18px;padding-bottom:96px}
+section[id]{scroll-margin-top:118px}
+section>h2,.h2{font-family:var(--font);font-weight:600;font-size:17px;margin:0 0 4px;letter-spacing:-.005em}
+.sub{color:var(--muted);font-size:13.5px;margin:0 0 12px;max-width:72ch}
+
+/* header */
+.top{position:sticky;top:0;z-index:30;background:rgba(10,18,32,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.top .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;height:58px}
+.nav{display:flex;gap:6px;overflow-x:auto;padding:0 0 10px;scrollbar-width:none}
+.nav::-webkit-scrollbar{display:none}
+.nav a{flex:none;padding:6px 13px;border-radius:999px;border:1px solid var(--line);background:var(--bg-2);color:var(--text-2);font-size:13px;text-decoration:none;transition:background .15s,color .15s}
+.nav a:hover{background:var(--surface-3);color:var(--text)}
+.brand{display:flex;align-items:center;gap:11px}
+.brand .mark{width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#1E5EFF,#4FA3FF);display:grid;place-items:center;box-shadow:0 6px 16px -6px rgba(79,163,255,.7)}
+.brand .mark span{font-family:var(--display);font-weight:800;font-size:17px;color:#fff}
+.brand h1{font-family:var(--display);font-weight:700;font-size:21px;margin:0;line-height:1}
+.brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:42px;padding:0 16px;border-radius:var(--r-sm);border:1px solid var(--line-2);background:var(--surface-2);color:var(--text-2);font-weight:500;font-size:14px;transition:background .18s var(--ease),transform .12s var(--ease),border-color .18s}
+.btn:hover{background:var(--surface-3);color:var(--text)}
+.btn:active{transform:translateY(1px) scale(.99)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--amber);border-color:var(--amber);color:var(--amber-ink);font-weight:600}
+.btn.primary:hover{background:var(--amber-2);border-color:var(--amber-2)}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:34px;padding:0 12px;font-size:13px;border-radius:8px}
+.btn.icon{width:42px;padding:0}
+
+/* panels */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+.panel.pad{padding:18px}
+@media(min-width:720px){.panel.pad{padding:22px}}
+
+/* hero */
+.hero{display:grid;overflow:hidden}
+@media(min-width:1000px){.hero{grid-template-columns:3fr 2fr}}
+.hero .stage{padding:14px 14px 10px}
+@media(min-width:720px){.hero .stage{padding:20px 20px 14px}}
+.stage-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+.stage-top p{margin:0;font-size:13px;color:var(--muted)}
+.stage svg{width:100%;height:auto;display:block}
+.syslegend{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+.syslegend button{border-radius:9px;padding:8px 4px;text-align:center;border:1px solid var(--line);background:var(--bg-2);transition:background .18s,border-color .18s,transform .12s}
+.syslegend button b{display:block;font-family:var(--display);font-size:18px;line-height:1;color:var(--c)}
+.syslegend button small{display:block;font-size:10.5px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.syslegend button[aria-pressed="true"]{background:var(--c);border-color:var(--c)}
+.syslegend button[aria-pressed="true"] b,.syslegend button[aria-pressed="true"] small{color:#0A1220}
+.hero .side{background:var(--bg-2);border-top:1px solid var(--line);padding:16px;display:grid;gap:14px;align-content:start}
+@media(min-width:1000px){.hero .side{border-top:0;border-left:1px solid var(--line);padding:20px}}
+
+/* KPI headline */
+.kpi{display:grid;gap:4px}
+.kpi .lbl{font-size:13px;color:var(--muted)}
+.kpi .big{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.kpi .big b{font-family:var(--display);font-weight:700;font-size:56px;line-height:.95;color:var(--amber);font-variant-numeric:tabular-nums}
+.kpi .big span{font-size:15px;color:var(--text-2)}
+.kpi .vs{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:4px;font-size:13.5px;color:var(--text-2)}
+.kpi .vs .fl1{font-family:var(--display);font-size:22px;color:var(--steel-2);font-weight:600}
+.tag{display:inline-flex;align-items:center;gap:6px;padding:3px 9px;border-radius:999px;font-size:12px;font-weight:600;line-height:1.3;white-space:nowrap}
+.tag.ok{background:rgba(78,203,141,.16);color:var(--ok)}
+.tag.bad{background:rgba(255,107,107,.16);color:var(--bad)}
+.tag.neutral{background:var(--surface-2);color:var(--text-2);font-weight:500}
+.tag.slv{background:rgba(245,179,36,.16);color:var(--amber)}
+.tag.fl1{background:rgba(127,151,188,.18);color:var(--steel-2)}
+
+/* selected system detail */
+.detail{display:grid;gap:10px;padding-top:14px;border-top:1px solid var(--line)}
+.detail .head{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.detail .head b{font-family:var(--display);font-size:34px;line-height:1;color:var(--c)}
+.detail .head span{font-size:13.5px;color:var(--text-2);text-align:right}
+.detail .row{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.detail .row b{font-family:var(--display);font-size:40px;line-height:1}
+.detail .row span{color:var(--muted);font-size:13px}
+.minis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.mini{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xs);padding:8px 10px}
+.mini b{display:block;font-family:var(--display);font-size:20px;line-height:1.1}
+.mini span{font-size:11px;color:var(--muted)}
+.note{font-size:12.5px;color:var(--text-2);background:var(--surface);border:1px solid var(--line);border-radius:var(--r-xs);padding:8px 10px}
+
+/* slider */
+.slider{display:grid;gap:8px}
+.slider .stop{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.slider .stop b{font-family:var(--display);font-size:38px;line-height:1}
+.slider .stop b small{font-size:20px;color:var(--muted);font-weight:600}
+.slider .stop span{font-size:13px;color:var(--muted)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:12px;border-radius:999px;background:linear-gradient(90deg,var(--A2) var(--v),var(--line) var(--v));outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:32px;height:32px;border-radius:50%;background:#fff;border:6px solid var(--A2);box-shadow:0 4px 14px -4px rgba(79,163,255,.8);cursor:pointer}
+input[type=range]::-moz-range-thumb{width:32px;height:32px;border-radius:50%;background:#fff;border:6px solid var(--A2);cursor:pointer}
+.slider .ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted-2)}
+
+/* scorecards */
+.cards{display:grid;gap:12px;grid-template-columns:1fr}
+@media(min-width:640px){.cards{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1000px){.cards{grid-template-columns:repeat(3,1fr)}}
+.sc{display:grid;gap:12px;padding:16px;cursor:pointer;transition:border-color .18s,transform .15s var(--ease)}
+.sc:hover{border-color:var(--line-2)}
+.sc[aria-selected="true"]{border-color:var(--c);box-shadow:0 0 0 1px var(--c),var(--shadow)}
+.sc .id{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.sc .id .code{font-family:var(--display);font-size:30px;line-height:1;color:var(--c);font-weight:700}
+.sc .id .name{font-size:14px;font-weight:600;color:var(--text)}
+.sc .id .lube{font-size:11.5px;color:var(--muted);margin-top:2px}
+.sc .score{text-align:right}
+.sc .score b{display:block;font-family:var(--display);font-size:30px;line-height:1;font-weight:700}
+.sc .score b.ok{color:var(--ok)}.sc .score b.bad{color:var(--bad)}
+.sc .score span{font-size:11px;color:var(--muted)}
+.dual{display:grid;gap:5px}
+.dual .bar{display:grid;grid-template-columns:38px 1fr 92px;align-items:center;gap:8px;font-size:12px}
+.dual .bar .k{color:var(--muted)}
+.dual .bar .track{height:14px;border-radius:5px;background:var(--bg-2);overflow:hidden}
+.dual .bar .fill{height:100%;border-radius:5px;transition:width .35s var(--ease)}
+.dual .bar.slv .fill{background:var(--amber)}
+.dual .bar.fl1 .fill{background:var(--steel)}
+.dual .bar .v{text-align:right;font-weight:600}
+.stepper{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px}
+.stepper .lbl{font-size:12.5px;color:var(--muted)}
+.stepper .lbl b{display:block;color:var(--text);font-weight:500;font-size:13px}
+.stepper .ctl{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;background:var(--bg-2)}
+.stepper .ctl button{width:38px;height:38px;font-size:18px;color:var(--text-2);transition:background .15s}
+.stepper .ctl button:hover{background:var(--surface-3);color:var(--text)}
+.stepper .ctl input{width:56px;height:38px;text-align:center;background:transparent;border:0;border-left:1px solid var(--line);border-right:1px solid var(--line);font-family:var(--display);font-size:19px;font-weight:600;-moz-appearance:textfield}
+.stepper .ctl input::-webkit-inner-spin-button{display:none}
+.stepper .ctl input:focus-visible{outline-offset:-2px;border-radius:0}
+.stepper .changed{font-size:11px;color:var(--amber);cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:7px;background:var(--bg-2);border:1px solid var(--line);font-size:12px;color:var(--text-2)}
+.chip b{color:var(--text);font-weight:600}
+.chip i{width:8px;height:8px;border-radius:50%;background:var(--dot)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.facts div{font-size:11.5px;color:var(--muted)}
+.facts div b{display:block;font-family:var(--display);font-size:18px;line-height:1.1;color:var(--text);font-weight:600}
+
+/* monthly comparison */
+.mgrid{display:grid;gap:16px}
+@media(min-width:1000px){.mgrid{grid-template-columns:2fr 1fr}}
+.chart{overflow-x:auto;padding-bottom:6px}
+.chart .inner{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(44px,1fr);gap:6px;min-width:620px;align-items:end;padding:0 2px}
+.col{display:grid;grid-template-rows:176px auto;gap:6px;cursor:pointer;border-radius:8px;padding:4px 2px 2px;transition:background .18s}
+.col:hover{background:var(--surface-2)}
+.col[aria-pressed="true"]{background:var(--surface-3)}
+.col .bars{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:176px}
+.col .b{width:40%;border-radius:4px 4px 2px 2px;transition:height .4s var(--ease);min-height:2px;position:relative}
+.col .b.slv{background:var(--amber)}.col .b.fl1{background:var(--steel)}
+.col .b.zero{background:repeating-linear-gradient(45deg,var(--line) 0 3px,transparent 3px 6px)}
+.col .m{text-align:center;font-size:11px;color:var(--muted);line-height:1.15;white-space:nowrap}
+.col .m small{display:block;color:var(--muted-2);font-size:10px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--text-2);margin-bottom:10px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px}
+.totals{display:grid;gap:12px}
+.tot{display:grid;gap:2px}
+.tot .k{font-size:12.5px;color:var(--muted)}
+.tot .v{font-family:var(--display);font-size:34px;line-height:1;font-weight:700}
+.tot .v small{font-size:15px;color:var(--muted);font-weight:500;margin-left:4px}
+.drums{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
+.drums i{width:11px;height:18px;border-radius:2px;background:var(--line)}
+.drums i.on{background:var(--ok)}
+details.hours{border-top:1px solid var(--line);padding-top:12px}
+details.hours summary{cursor:pointer;font-size:13.5px;color:var(--text-2);list-style:none;display:flex;align-items:center;gap:8px}
+details.hours summary::-webkit-details-marker{display:none}
+details.hours summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin-left:auto}
+details.hours[open] summary::after{transform:rotate(-135deg)}
+.hrs{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px;margin-top:12px}
+.hrs label{font-size:11.5px;color:var(--muted);display:grid;gap:3px}
+.field{width:100%;min-height:42px;padding:8px 10px;border-radius:9px;border:1px solid var(--line-2);background:var(--bg-2);color:var(--text);font-size:16px;transition:border-color .15s}
+.field:hover{border-color:var(--muted-2)}
+.field:focus-visible{outline:2px solid var(--amber);outline-offset:1px;border-color:var(--amber)}
+input.field[type=number]{-moz-appearance:textfield}input.field::-webkit-inner-spin-button{opacity:.35}
+select.field{appearance:none;-webkit-appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:30px}
+
+/* live */
+.live{display:grid;gap:14px}
+@media(min-width:720px){.live{grid-template-columns:1fr 1fr}}
+.race{display:grid;gap:8px}
+.race .lane{display:grid;grid-template-columns:70px 1fr;gap:10px;align-items:center}
+.race .lane .k{font-size:12.5px;font-weight:600}
+.race .lane .track{height:34px;border-radius:9px;background:var(--bg-2);overflow:hidden;position:relative}
+.race .lane .fill{height:100%;border-radius:9px;transition:width .12s linear}
+.race .lane.slv .fill{background:var(--amber)}.race .lane.fl1 .fill{background:var(--steel)}
+.race .lane .val{position:absolute;right:10px;top:0;height:100%;display:flex;align-items:center;font-family:var(--display);font-size:20px;font-weight:700}
+.live-ctl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden;background:var(--bg-2)}
+.seg button{padding:8px 12px;font-size:13px;color:var(--text-2);transition:background .15s}
+.seg button[aria-pressed="true"]{background:var(--surface-3);color:var(--text);font-weight:600}
+.prog{height:8px;border-radius:999px;background:var(--bg-2);overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--A2),var(--amber));width:0;transition:width .12s linear}
+.live .big{display:flex;align-items:baseline;gap:8px}
+.live .big b{font-family:var(--display);font-size:46px;line-height:1;color:var(--ok)}
+.live .big span{color:var(--muted);font-size:13.5px}
+
+/* lab */
+.lab{display:grid;gap:16px}
+@media(min-width:900px){.lab{grid-template-columns:1fr 1fr}}
+.lab .vis{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);display:grid;place-items:center;padding:12px}
+.lab .vis svg{width:100%;max-width:300px;height:auto}
+.lab .form{display:grid;gap:12px}
+.lab label.block{display:grid;gap:5px;font-size:13px;color:var(--text-2)}
+.opts{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.opts button{padding:10px 4px;border-radius:9px;border:1px solid var(--line-2);background:var(--bg-2);font-family:var(--display);font-size:17px;font-weight:600;color:var(--text-2);transition:background .15s,border-color .15s}
+.opts button[aria-pressed="true"]{background:var(--surface-3);border-color:var(--info);color:var(--text)}
+.adjs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.adjs button{display:flex;align-items:center;gap:8px;padding:10px;border-radius:9px;border:1px solid var(--line-2);background:var(--bg-2);text-align:left;font-size:13px;color:var(--text-2);transition:background .15s,border-color .15s}
+.adjs button i{width:12px;height:12px;border-radius:50%;flex:none;background:var(--dot)}
+.adjs button span{flex:1}
+.adjs button b{font-weight:600;color:var(--text)}
+.adjs button[aria-pressed="true"]{background:var(--surface-3);border-color:var(--dot);color:var(--text)}
+.delta{display:grid;gap:6px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-xs);padding:10px 12px;font-size:13px}
+.delta div{display:flex;justify-content:space-between;gap:10px}
+.delta .k{color:var(--muted)}
+
+/* inventory */
+.inv{display:grid;gap:10px}
+.grp{overflow:hidden}
+.grp>summary{list-style:none;cursor:pointer;width:100%;display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:12px;padding:14px 16px;text-align:left;transition:background .15s}
+.grp>summary:hover{background:var(--surface-2)}
+.grp .code{font-family:var(--display);font-size:26px;color:var(--c);font-weight:700;width:34px}
+.grp .nm{font-weight:600;font-size:14px}
+.grp .nm small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.grp .sum{text-align:right;font-size:12.5px;color:var(--muted)}
+.grp .sum b{display:block;color:var(--text);font-size:14px}
+.grp .chev{width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s;margin-right:4px}
+.grp[open] .chev{transform:rotate(-135deg)}
+.grp table{width:100%;border-collapse:collapse;font-size:13px}
+.grp thead th{font-weight:500;color:var(--muted);text-align:left;padding:0 8px 6px;font-size:11.5px;border-bottom:1px solid var(--line)}
+.grp tbody td{padding:5px 4px;border-bottom:1px solid var(--line);vertical-align:middle}
+.grp tbody tr:last-child td{border-bottom:0}
+.grp .tbl{padding:4px 12px 12px;overflow-x:auto}
+.grp .tbl .field{min-height:36px;padding:6px 8px;font-size:13.5px}
+.grp td.c{text-align:center}.grp td.r{text-align:right}
+.grp .dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:6px;background:var(--dot)}
+.grp .x{width:34px;height:34px;border-radius:8px;color:var(--muted);font-size:16px;transition:background .15s,color .15s}
+.grp .x:hover{background:rgba(255,107,107,.15);color:var(--bad)}
+.grp .add{margin:8px 12px 12px;width:calc(100% - 24px);min-height:40px;border:1px dashed var(--line-2);border-radius:9px;color:var(--text-2);font-size:13px;transition:background .15s}
+.grp .add:hover{background:var(--surface-2)}
+.grp .fl1v{color:var(--steel-2)}
+.grp .nameIn{min-width:170px}
+
+/* params */
+.pgrid{display:grid;gap:14px}
+@media(min-width:900px){.pgrid{grid-template-columns:1fr 1fr 1fr}}
+.fieldset{display:grid;gap:10px}
+.fieldset label{display:grid;gap:4px;font-size:13px;color:var(--text-2)}
+.fieldset label small{color:var(--muted);font-size:11.5px}
+.lubesys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.lubesys label{font-size:12px;color:var(--muted)}
+.lubesys label b{color:var(--c);font-family:var(--display);font-size:16px}
+
+/* footer note */
+.foot{font-size:12.5px;color:var(--muted);padding:14px 16px;display:grid;gap:4px}
+.foot b{color:var(--text-2);font-weight:600}
+
+/* shovel overlay anims */
+@keyframes ring{0%{r:14;opacity:.9}70%{r:44;opacity:0}100%{r:44;opacity:0}}
+@keyframes track{to{stroke-dashoffset:-60}}
+@keyframes flow{to{stroke-dashoffset:-40}}
+@keyframes piston{0%{transform:translateY(0)}40%{transform:translateY(46px)}100%{transform:translateY(0)}}
+@keyframes drop{0%{opacity:0;transform:translateY(-6px) scale(.6)}30%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(34px) scale(1.1)}}
+.ring{animation:ring var(--dur,2s) ease-out infinite;transform-box:fill-box;transform-origin:center}
+.tracks{stroke-dasharray:22 14;animation:track var(--tdur,2s) linear infinite}
+.flowline{stroke-dasharray:10 10;animation:flow .8s linear infinite}
+.piston{animation:piston 1.1s var(--ease) 1;transform-box:fill-box}
+.droplet{animation:drop 1.1s ease-in 1;transform-box:fill-box}
+.hot{cursor:pointer}
+.hot text{font-family:var(--display);font-weight:800}
+@media(prefers-reduced-motion:reduce){.ring,.tracks,.flowline,.piston,.droplet{animation:none}*{transition:none!important}}
+
+[hidden]{display:none!important}
+.grp summary::-webkit-details-marker{display:none}
+.grp .rows{display:grid;gap:8px;padding:2px 12px 4px}
+.grp .empty{padding:10px 16px 14px;color:var(--muted);font-size:13px}
+.irow{display:grid;gap:8px;padding:10px;background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  grid-template-areas:"name name name name" "qty qty sys sys" "now now nowcc nowcc" "old old oldcc oldcc" "sum sum sum del"}
+.irow label,.irow .f-sum{display:grid;gap:3px;min-width:0}
+.irow label>span,.irow .f-sum>span{font-size:11px;color:var(--muted)}
+.irow .field{min-height:40px;padding:6px 9px;font-size:16px}
+.f-name{grid-area:name}.f-qty{grid-area:qty}.f-sys{grid-area:sys}.f-now{grid-area:now}.f-nowcc{grid-area:nowcc}
+.f-old{grid-area:old}.f-oldcc{grid-area:oldcc}.f-sum{grid-area:sum;align-content:end}.irow .x{grid-area:del;justify-self:end;align-self:end}
+.f-sum b{font-family:var(--display);font-size:17px;font-weight:600}
+.f-old>span,.f-oldcc>span{color:var(--steel)}.f-now>span,.f-nowcc>span{color:var(--amber)}
+@media(min-width:960px){
+  .irow{grid-template-columns:minmax(150px,1.5fr) 64px 72px minmax(150px,1.3fr) 76px minmax(150px,1.3fr) 76px 130px 38px;align-items:end;
+    grid-template-areas:"name qty sys now nowcc old oldcc sum del"}
+}
+.x{display:grid;place-items:center;width:38px;height:38px;border-radius:9px;color:var(--muted);transition:background .15s,color .15s}
+.x:hover{background:rgba(255,107,107,.15);color:var(--bad)}
+.add{display:flex;align-items:center;justify-content:center;gap:8px;margin:8px 12px 12px;width:calc(100% - 24px);min-height:42px;border:1px dashed var(--line-2);border-radius:var(--r-sm);color:var(--text-2);font-size:13.5px;transition:background .15s}
+.add:hover{background:var(--surface-2);color:var(--text)}
+.ic{display:inline-block;vertical-align:-3px;flex:none}
+.split{display:grid;gap:8px;font-size:12.5px}
+.split .sr{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:baseline}
+.split .sr.h{color:var(--muted);font-size:11.5px}
+.split .sr b{font-weight:600}
+.split .sr .a{color:var(--amber)}.split .sr .s{color:var(--steel-2)}
+.timers{display:grid;gap:10px}
+.sc .stepper .lbl{min-width:0}
+.pill{font-size:11.5px;color:var(--muted)}
+.cmp-note{display:grid;gap:6px}
+.hr{height:1px;background:var(--line);border:0;margin:2px 0}
+.lubesys{grid-template-columns:repeat(2,1fr)}
+@media(min-width:520px){.lubesys{grid-template-columns:repeat(3,1fr)}}
+.lubesys select.field{min-height:38px;font-size:13px}
+details.notes{padding:0}
+details.notes summary{cursor:pointer;padding:14px 16px;font-weight:600;font-size:14px;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.notes summary::-webkit-details-marker{display:none}
+details.notes summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .2s}
+details.notes[open] summary::after{transform:rotate(-135deg)}
+details.notes .body{padding:0 16px 16px;display:grid;gap:10px;font-size:13.5px;color:var(--text-2);max-width:92ch}
+details.notes .body p{margin:0}
+details.notes .body b{color:var(--text)}
+.foot{margin:0}
+
+.bigsave{display:flex;align-items:baseline;gap:8px}.bigsave b{font-family:var(--display);font-size:46px;line-height:1;color:var(--ok)}.bigsave span{color:var(--muted);font-size:13.5px}
+
+/* ── v4.1 · correcciones tras inspección visual ── */
+.hero{grid-template-columns:minmax(0,1fr)}
+@media(min-width:1000px){.hero{grid-template-columns:minmax(0,3fr) minmax(0,2fr)}}
+.hero>*{min-width:0}
+.mgrid{display:block}
+.tstrip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:4px 0 16px}
+@media(min-width:760px){.tstrip{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.tstrip .tot{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:12px 14px;align-content:start}
+.tstrip .tot .v{font-size:30px}
+.tfoot{display:grid;gap:12px;margin-top:14px;align-items:start}
+@media(min-width:900px){.tfoot{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+input[type=number]{-moz-appearance:textfield;appearance:textfield}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.sc{display:flex;flex-direction:column}
+.sc .chips{margin-top:auto;padding-top:2px}
+main{grid-template-columns:minmax(0,1fr)}
+main>*{min-width:0}
+.syslegend{grid-template-columns:repeat(6,minmax(0,1fr))}
+.syslegend button{min-width:0;overflow:hidden}
+/* ── v4.2 · segunda tanda ── */
+.sc .score b,#p-val,.kpi .big b,.detail .row b{white-space:nowrap}
+@media(max-width:520px){.sc .score b{font-size:26px}.brand p{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}}
+.syslegend button small{font-size:10px}
+.irow{grid-template-areas:"name name name name" "qty qty sys sys" "now now now now" "old old old old" "nowcc nowcc oldcc oldcc" "sum sum sum del"}
+@media(min-width:960px){.irow{grid-template-areas:"name qty sys now nowcc old oldcc sum del"}}
+.irow select.field{text-overflow:ellipsis}
+@media(min-width:960px){.irow{grid-template-columns:minmax(150px,1.5fr) 64px 72px minmax(150px,1.3fr) 76px minmax(150px,1.3fr) 76px 176px 38px}}
+.f-sum b{white-space:nowrap}
+
+/* ── gráfico de líneas por lubricante ── */
+.lhd{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin:20px 0 10px}
+.lhd h3{margin:0;font-size:16px;font-weight:600}
+.llegend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--text-2)}
+.llegend span{display:inline-flex;align-items:center;gap:8px}
+.lines{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media(min-width:900px){.lines{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.lpanel{background:var(--bg-2);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px;min-width:0}
+.lhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+.lhead h3{margin:0;font-size:14.5px;font-weight:600;line-height:1.25}
+.lhead p{margin:3px 0 0;font-size:12px;color:var(--muted)}
+.ltot{text-align:right;font-size:12px;color:var(--muted)}
+.ltot b{display:block;font-family:var(--display);font-size:22px;line-height:1.15;color:var(--ok)}
+.ltot b.bad{color:var(--bad)}
+.lscroll{overflow-x:auto;padding-bottom:2px}
+.lscroll svg{display:block;max-width:none}
+.lc-g{stroke:var(--line);stroke-width:1}
+.lc-t{fill:var(--muted);font-size:10px;font-family:var(--font)}
+.lc-y{fill:var(--muted-2);font-size:9.5px}
+.lc-sel{stroke:var(--text-2);stroke-width:1;stroke-dasharray:3 3;opacity:.7}
+.lc-hit{cursor:pointer}.lc-hit:hover{fill:rgba(255,255,255,.05)}
+.lread{margin:8px 0 0}
+
+.lhead{display:grid;gap:8px;justify-content:stretch}
+.ltot{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;text-align:left}
+.ltot b{display:inline;font-size:24px}
+.lc-t{font-size:9.5px}
+.lhint{display:none;margin:-2px 0 8px;font-size:12px;color:var(--muted)}
+@media(max-width:899px){.lhint{display:block}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>const PALA_INNER="<style type=\"text/css\">.st0{fill:#F7931E;}.st1{fill:#F7931E;stroke:#000000;stroke-miterlimit:10;}.st2{fill:#333333;stroke:#000000;stroke-width:0.93;stroke-miterlimit:10;}.st3{fill:#CCCCCC;stroke:#000000;stroke-width:0.93;stroke-miterlimit:10;}.st4{fill:#333333;stroke:#000000;stroke-miterlimit:10;}.st5{stroke:#000000;stroke-miterlimit:10;}.st6{fill:#B3B3B3;stroke:#000000;stroke-width:0.93;stroke-miterlimit:10;}.st7{fill:#4D4D4D;stroke:#000000;stroke-width:0.93;stroke-miterlimit:10;}.st8{fill:#999999;stroke:#000000;stroke-width:0.93;stroke-miterlimit:10;}.st9{stroke:#000000;stroke-width:0.93;stroke-miterlimit:10;}.st10{fill:#CCCCCC;stroke:#1A1A1A;stroke-width:3;stroke-miterlimit:10;}.st11{fill:#999999;stroke:#000000;stroke-width:1.0905;stroke-miterlimit:10;}.st12{fill:none;stroke:#000000;stroke-width:4;stroke-miterlimit:10;}.st13{fill:none;stroke:#000000;stroke-width:4.0823;stroke-miterlimit:10;}.st14{fill:none;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}.st15{fill:#FBB03B;stroke:#000000;stroke-width:1.55;stroke-miterlimit:10;}.st16{fill:#FBB03B;stroke:#000000;stroke-width:1.2756;stroke-miterlimit:10;}.st17{fill:#333333;stroke:#000000;stroke-width:1.7952;stroke-miterlimit:10;}.st18{display:none;stroke:#000000;stroke-width:0.9811;stroke-miterlimit:10;}.st19{fill:#333333;stroke:#000000;stroke-width:0.9951;stroke-miterlimit:10;}.st20{fill:#FBB03B;stroke:#000000;stroke-width:0.9951;stroke-miterlimit:10;}.st21{fill:#B3B3B3;stroke:#000000;stroke-width:1.6452;stroke-miterlimit:10;}.st22{fill:#FBB03B;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}.st23{fill:#F7931E;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}.st24{fill:#FBB03B;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}.st25{fill:#4D4D4D;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}.st26{fill:#F7931E;stroke:#000000;stroke-width:1.0217;stroke-miterlimit:10;}.st27{fill:#F7931E;stroke:#000000;stroke-width:0.8367;stroke-miterlimit:10;}.st28{fill:#E6E6E6;stroke:#000000;stroke-miterlimit:10;}.st29{fill:none;stroke:#000000;stroke-width:1.0102;stroke-miterlimit:10;}.st30{fill:none;stroke:#000000;stroke-width:0.9718;stroke-miterlimit:10;}.st31{fill:none;stroke:#000000;stroke-width:1.9194;stroke-miterlimit:10;}.st32{fill:none;stroke:#000000;stroke-miterlimit:10;}.st33{fill:#1A1A1A;stroke:#000000;stroke-miterlimit:10;}.st34{fill:#1A1A1A;stroke:#000000;stroke-width:0.8367;stroke-miterlimit:10;}.st35{fill:#1A1A1A;stroke:#000000;stroke-width:1.291;stroke-miterlimit:10;}.st36{fill:#333333;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}.st37{fill:#B3B3B3;stroke:#000000;stroke-width:0.75;stroke-miterlimit:10;}.st38{fill:#FFFFFF;}.st39{fill:#CCCCCC;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}.st40{fill:#0071BC;stroke:#000000;stroke-width:1.2163;stroke-miterlimit:10;}.st41{fill:#0071BC;stroke:#000000;stroke-width:1.2012;stroke-miterlimit:10;}.st42{fill:#0071BC;stroke:#000000;stroke-width:1.2638;stroke-miterlimit:10;}.st43{fill:#0071BC;stroke:#000000;stroke-width:2;stroke-miterlimit:10;}.st44{fill:none;stroke:#000000;stroke-width:1.3839;stroke-miterlimit:10;}.st45{fill:none;stroke:#000000;stroke-width:1.5901;stroke-miterlimit:10;}.st46{fill:none;stroke:#000000;stroke-width:1.6528;stroke-miterlimit:10;}.st47{fill:none;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}.st48{fill:#F7931E;stroke:#000000;stroke-width:0.5;stroke-miterlimit:10;}.st49{fill:#4384B2;stroke:#000000;stroke-width:1.0104;stroke-miterlimit:10;}.st50{fill:#0071BC;stroke:#000000;stroke-width:1.6452;stroke-miterlimit:10;}.st51{fill:none;stroke:#000000;stroke-width:3;stroke-miterlimit:10;}.st52{fill:#F7931E;stroke:#000000;stroke-width:5;stroke-miterlimit:10;}.st53{fill:#FFFFFF;stroke:#000000;stroke-miterlimit:10;}.st54{fill:#333333;}.st55{fill:#B3B3B3;stroke:#000000;stroke-width:2.3283;stroke-miterlimit:10;}.st56{fill:#333333;stroke:#000000;stroke-width:0.75;stroke-miterlimit:10;}.st57{fill:#1A1A1A;stroke:#000000;stroke-width:0.8271;stroke-miterlimit:10;}.st58{fill:#F2F2F2;}.st59{font-family:'Arial-Black';}.st60{font-size:16px;}.st61{font-size:23px;}.st62{fill:#ED1C24;}.st63{font-family:'ArialNarrow-BoldItalic';}.st64{font-size:6.7551px;}.st65{font-size:8.3226px;}.st66{fill:#333333;stroke:#000000;stroke-width:1.0637;stroke-miterlimit:10;}.st67{fill:#FBB03B;stroke:#000000;stroke-width:0.6912;stroke-miterlimit:10;}.st68{fill:#FBB03B;stroke:#000000;stroke-width:0.6204;stroke-miterlimit:10;}.st69{fill:#4D4D4D;stroke:#000000;stroke-width:0.6912;stroke-miterlimit:10;}.st70{fill:#333333;stroke:#000000;stroke-width:0.6912;stroke-miterlimit:10;}.st71{fill:#FBB03B;stroke:#000000;stroke-width:0.7693;stroke-miterlimit:10;}.st72{fill:#1A1A1A;stroke:#000000;stroke-width:0.7693;stroke-miterlimit:10;}.st73{fill:#FBB03B;stroke:#000000;stroke-miterlimit:10;}.st74{fill:#F7931E;stroke:#F7931E;stroke-width:1.1339;stroke-miterlimit:10;}.st75{fill:#F7931E;stroke:#F7931E;stroke-width:0.8452;stroke-miterlimit:10;}.st76{fill:#F7931E;stroke:#000000;stroke-width:0.7693;stroke-miterlimit:10;}.st77{fill:#F7931E;stroke:#F7931E;stroke-width:0.5345;stroke-miterlimit:10;}.st78{fill:#F7931E;stroke:#F7931E;stroke-width:1.069;stroke-miterlimit:10;}.st79{fill:#F7931E;stroke:#F7931E;stroke-width:0.9428;stroke-miterlimit:10;}.st80{fill:#F7931E;stroke:#F7931E;stroke-width:0.7968;stroke-miterlimit:10;}.st81{fill:#F7931E;stroke:#000000;stroke-width:0.7968;stroke-miterlimit:10;}.st82{fill:#FBB03B;stroke:#000000;stroke-width:0.8909;stroke-miterlimit:10;}.st83{fill:#FBB03B;stroke:#000000;stroke-width:0.8399;stroke-miterlimit:10;}.st84{fill:#FBB03B;stroke:#000000;stroke-width:0.7968;stroke-miterlimit:10;}.st85{stroke:#000000;stroke-width:0.7693;stroke-miterlimit:10;}.st86{fill:#F7931E;stroke:#000000;stroke-width:0.6912;stroke-miterlimit:10;}.st87{stroke:#000000;stroke-width:0.6912;stroke-miterlimit:10;}.st88{fill:none;stroke:#000000;stroke-width:3.8941;stroke-miterlimit:10;}.st89{fill:#FBB03B;stroke:#000000;stroke-width:0.6627;stroke-miterlimit:10;}.st90{fill:#FFFFFF;stroke:#000000;stroke-width:1.0637;stroke-miterlimit:10;}<\/style><g id=\"Capa_1\"><\/g><g id=\"saddle_block\"><g><polygon class=\"st0\" points=\"1050.21,557.57 1095.91,515.76 1114.27,542.82 1082.89,559.49 \t\t\"/><path d=\"M1095.82,516.52l17.73,26.12l-30.77,16.35l-31.36-1.84L1095.82,516.52 M1096,515l-47,43l34,2l32-17L1096,515L1096,515z\"/><\/g><line class=\"st1\" x1=\"1092.52\" y1=\"539.35\" x2=\"1106.72\" y2=\"530.8\"/><\/g><g id=\"oruga\"><polygon class=\"st2\" points=\"558.5,849.5 566.5,838.5 581.5,830.5 600.5,825.5 613.5,823.5 630.5,821.5 850.5,821.5 864.5,825.5 881.5,831.5 895.5,834.5 911.5,844.5 920.5,861.5 920.5,878.5 908.5,893.5 889.5,901.5 870.5,901.5 640.5,901.5 621.5,899.5 607.5,893.5 591.5,891.5 569.5,886.5 560.5,870.5 \t\"/><rect x=\"680.5\" y=\"788.5\" class=\"st3\" width=\"149\" height=\"32\"/><rect x=\"668.5\" y=\"792.5\" class=\"st4\" width=\"173\" height=\"13\"/><rect x=\"678.5\" y=\"781.5\" class=\"st5\" width=\"155\" height=\"7\"/><path class=\"st6\" d=\"M610.5,885.5h81l5,3h195l7-3c0,0,8-17,5-24c0,0,0-13-16-14s-45-5-45-5h-256c0,0-15.94,3.01-18,15C567.48,863.43,572.07,873.62,610.5,885.5z\"/><circle class=\"st7\" cx=\"581.5\" cy=\"859.5\" r=\"15\"/><path class=\"st8\" d=\"M717.25,872.5h-32.5c-1.24,0-2.25-1.01-2.25-2.25v-13.5c0-1.24,1.01-2.25,2.25-2.25h32.5c1.24,0,2.25,1.01,2.25,2.25v13.5C719.5,871.49,718.49,872.5,717.25,872.5z\"/><circle class=\"st9\" cx=\"686.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"696.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"704.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"714.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"686.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st9\" cx=\"696.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st9\" cx=\"704.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st9\" cx=\"714.5\" cy=\"867.5\" r=\"2\"/><path class=\"st8\" d=\"M825.25,872.5h-32.5c-1.24,0-2.25-1.01-2.25-2.25v-13.5c0-1.24,1.01-2.25,2.25-2.25h32.5c1.24,0,2.25,1.01,2.25,2.25v13.5C827.5,871.49,826.49,872.5,825.25,872.5z\"/><circle class=\"st9\" cx=\"794.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"804.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"812.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"822.5\" cy=\"859.5\" r=\"2\"/><circle class=\"st9\" cx=\"794.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st9\" cx=\"804.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st9\" cx=\"812.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st9\" cx=\"822.5\" cy=\"867.5\" r=\"2\"/><circle class=\"st10\" cx=\"618.5\" cy=\"876.5\" r=\"3\"/><circle class=\"st10\" cx=\"649.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"677.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"705.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"733.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"761.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"789.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"817.5\" cy=\"881.5\" r=\"3\"/><circle class=\"st10\" cx=\"845.5\" cy=\"881.5\" r=\"3\"/><polygon class=\"st8\" points=\"685.5,904.5 683.5,901.5 683.5,895.5 685.5,893.5 694.5,893.5 694.5,897.5 695.5,897.5 695.5,902.5 694.5,904.5 \t\"/><polygon class=\"st8\" points=\"702.5,904.5 700.5,901.5 700.5,895.5 702.5,893.5 711.5,893.5 711.5,897.5 712.5,897.5 712.5,902.5 711.5,904.5 \t\"/><polygon class=\"st8\" points=\"718.5,904.5 716.5,901.5 716.5,895.5 718.5,893.5 727.5,893.5 727.5,897.5 728.5,897.5 728.5,902.5 727.5,904.5 \t\"/><polygon class=\"st8\" points=\"636.5,904.5 634.5,901.5 634.5,895.5 636.5,893.5 645.5,893.5 645.5,897.5 646.5,897.5 646.5,902.5 645.5,904.5 \t\"/><polygon class=\"st8\" points=\"653.5,904.5 651.5,901.5 651.5,895.5 653.5,893.5 662.5,893.5 662.5,897.5 663.5,897.5 663.5,902.5 662.5,904.5 \t\"/><polygon class=\"st8\" points=\"669.5,904.5 667.5,901.5 667.5,895.5 669.5,893.5 678.5,893.5 678.5,897.5 679.5,897.5 679.5,902.5 678.5,904.5 \t\"/><polygon class=\"st8\" points=\"734.5,904.5 732.5,901.5 732.5,895.5 734.5,893.5 743.5,893.5 743.5,897.5 744.5,897.5 744.5,902.5 743.5,904.5 \t\"/><polygon class=\"st8\" points=\"751.5,904.5 749.5,901.5 749.5,895.5 751.5,893.5 760.5,893.5 760.5,897.5 761.5,897.5 761.5,902.5 760.5,904.5 \t\"/><polygon class=\"st8\" points=\"767.5,904.5 765.5,901.5 765.5,895.5 767.5,893.5 776.5,893.5 776.5,897.5 777.5,897.5 777.5,902.5 776.5,904.5 \t\"/><polygon class=\"st8\" points=\"784.5,904.5 782.5,901.5 782.5,895.5 784.5,893.5 793.5,893.5 793.5,897.5 794.5,897.5 794.5,902.5 793.5,904.5 \t\"/><polygon class=\"st8\" points=\"801.5,904.5 799.5,901.5 799.5,895.5 801.5,893.5 810.5,893.5 810.5,897.5 811.5,897.5 811.5,902.5 810.5,904.5 \t\"/><polygon class=\"st8\" points=\"817.5,904.5 815.5,901.5 815.5,895.5 817.5,893.5 826.5,893.5 826.5,897.5 827.5,897.5 827.5,902.5 826.5,904.5 \t\"/><polygon class=\"st8\" points=\"833.5,904.5 831.5,901.5 831.5,895.5 833.5,893.5 842.5,893.5 842.5,897.5 843.5,897.5 843.5,902.5 842.5,904.5 \t\"/><polygon class=\"st8\" points=\"850.5,904.5 848.5,901.5 848.5,895.5 850.5,893.5 859.5,893.5 859.5,897.5 860.5,897.5 860.5,902.5 859.5,904.5 \t\"/><polygon class=\"st8\" points=\"866.5,904.5 864.5,901.5 864.5,895.5 866.5,893.5 875.5,893.5 875.5,897.5 876.5,897.5 876.5,902.5 875.5,904.5 \t\"/><polygon class=\"st8\" points=\"815.5,817.5 817.5,820.5 817.5,826.5 815.5,828.5 806.5,828.5 806.5,824.5 805.5,824.5 805.5,819.5 806.5,817.5 \t\"/><polygon class=\"st8\" points=\"798.5,817.5 800.5,820.5 800.5,826.5 798.5,828.5 789.5,828.5 789.5,824.5 788.5,824.5 788.5,819.5 789.5,817.5 \t\"/><polygon class=\"st8\" points=\"782.5,817.5 784.5,820.5 784.5,826.5 782.5,828.5 773.5,828.5 773.5,824.5 772.5,824.5 772.5,819.5 773.5,817.5 \t\"/><polygon class=\"st11\" points=\"851.25,817.5 854,820.5 854,826.5 851.25,828.5 838.87,828.5 838.87,824.5 837.5,824.5 837.5,819.5 838.87,817.5 \t\"/><polygon class=\"st8\" points=\"870.97,823.96 871.97,827.42 870.17,833.14 867.66,834.45 859.08,831.74 860.28,827.92 859.33,827.62 860.83,822.86 862.39,821.25 \t\"/><polygon class=\"st8\" points=\"886.92,827.9 887.97,831.35 886.23,837.09 883.73,838.42 875.12,835.81 876.28,831.99 875.32,831.7 876.77,826.91 878.31,825.29 \t\"/><polygon class=\"st8\" points=\"900.92,831.9 901.97,835.35 900.23,841.09 897.73,842.42 889.12,839.81 890.28,835.99 889.32,835.7 890.77,830.91 892.31,829.29 \t\"/><polygon class=\"st8\" points=\"918.3,845.92 917.09,849.31 912.28,852.9 909.48,852.49 904.1,845.28 907.31,842.89 906.71,842.09 910.72,839.1 912.92,838.7 \t\"/><polygon class=\"st8\" points=\"924.36,866.45 921.56,868.73 915.59,869.31 913.41,867.51 912.55,858.55 916.53,858.17 916.43,857.17 921.41,856.69 923.49,857.49 \t\"/><polygon class=\"st8\" points=\"921,886.32 917.4,886.41 912.33,883.19 911.71,880.43 916.54,872.83 919.91,874.97 920.45,874.13 924.67,876.81 925.82,878.73 \t\"/><polygon class=\"st8\" points=\"905.12,898.79 901.81,897.35 898.56,892.31 899.16,889.54 906.72,884.67 908.89,888.03 909.73,887.49 912.44,891.69 912.68,893.92 \t\"/><polygon class=\"st8\" points=\"886.53,905.51 883.65,903.33 881.68,897.66 882.92,895.12 891.42,892.16 892.73,895.94 893.68,895.61 895.32,900.34 895.03,902.56 \t\"/><polygon class=\"st8\" points=\"831.5,817.5 833.5,820.5 833.5,826.5 831.5,828.5 822.5,828.5 822.5,824.5 821.5,824.5 821.5,819.5 822.5,817.5 \t\"/><polygon class=\"st8\" points=\"766.5,817.5 768.5,820.5 768.5,826.5 766.5,828.5 757.5,828.5 757.5,824.5 756.5,824.5 756.5,819.5 757.5,817.5 \t\"/><polygon class=\"st8\" points=\"749.5,817.5 751.5,820.5 751.5,826.5 749.5,828.5 740.5,828.5 740.5,824.5 739.5,824.5 739.5,819.5 740.5,817.5 \t\"/><polygon class=\"st8\" points=\"733.5,817.5 735.5,820.5 735.5,826.5 733.5,828.5 724.5,828.5 724.5,824.5 723.5,824.5 723.5,819.5 724.5,817.5 \t\"/><polygon class=\"st8\" points=\"716.5,817.5 718.5,820.5 718.5,826.5 716.5,828.5 707.5,828.5 707.5,824.5 706.5,824.5 706.5,819.5 707.5,817.5 \t\"/><polygon class=\"st8\" points=\"699.5,817.5 701.5,820.5 701.5,826.5 699.5,828.5 690.5,828.5 690.5,824.5 689.5,824.5 689.5,819.5 690.5,817.5 \t\"/><polygon class=\"st8\" points=\"683.5,817.5 685.5,820.5 685.5,826.5 683.5,828.5 674.5,828.5 674.5,824.5 673.5,824.5 673.5,819.5 674.5,817.5 \t\"/><polygon class=\"st8\" points=\"667.5,817.5 669.5,820.5 669.5,826.5 667.5,828.5 658.5,828.5 658.5,824.5 657.5,824.5 657.5,819.5 658.5,817.5 \t\"/><polygon class=\"st8\" points=\"650.5,817.5 652.5,820.5 652.5,826.5 650.5,828.5 641.5,828.5 641.5,824.5 640.5,824.5 640.5,819.5 641.5,817.5 \t\"/><polygon class=\"st8\" points=\"634.5,817.5 636.5,820.5 636.5,826.5 634.5,828.5 625.5,828.5 625.5,824.5 624.5,824.5 624.5,819.5 625.5,817.5 \t\"/><polygon class=\"st8\" points=\"617.78,818.04 620.14,820.76 620.89,826.72 619.16,828.95 610.23,830.09 609.73,826.12 608.74,826.24 608.11,821.28 608.85,819.17 \t\"/><polygon class=\"st8\" points=\"603.01,821.68 605.69,824.09 607.18,829.91 605.74,832.34 597.02,834.57 596.03,830.69 595.06,830.94 593.82,826.09 594.29,823.91 \t\"/><polygon class=\"st8\" points=\"587.01,825.68 589.69,828.09 591.18,833.91 589.74,836.34 581.02,838.57 580.03,834.69 579.06,834.94 577.82,830.09 578.29,827.91 \t\"/><polygon class=\"st8\" points=\"568.15,831.21 571.59,832.28 575.37,836.95 575.07,839.76 568.07,845.42 565.55,842.31 564.78,842.94 561.63,839.05 561.15,836.87 \t\"/><polygon class=\"st8\" points=\"554.5,846.5 557.97,845.52 563.68,847.37 564.97,849.89 562.19,858.45 558.39,857.22 558.08,858.17 553.32,856.63 551.73,855.06 \t\"/><polygon class=\"st8\" points=\"553.7,869.86 555.02,866.5 559.95,863.08 562.73,863.57 567.87,870.96 564.59,873.25 565.16,874.07 561.05,876.92 558.84,877.25 \t\"/><polygon class=\"st8\" points=\"570.1,886.13 569.04,882.69 570.74,876.94 573.23,875.59 581.86,878.15 580.72,881.99 581.68,882.27 580.26,887.06 578.73,888.7 \t\"/><polygon class=\"st8\" points=\"586.1,892.13 585.04,888.69 586.74,882.94 589.23,881.59 597.86,884.15 596.72,887.99 597.68,888.27 596.26,893.06 594.73,894.7 \t\"/><polygon class=\"st8\" points=\"602.1,897.13 601.04,893.69 602.74,887.94 605.23,886.59 613.86,889.15 612.72,892.99 613.68,893.27 612.26,898.06 610.73,899.7 \t\"/><polygon class=\"st8\" points=\"616.1,902.13 615.04,898.69 616.74,892.94 619.23,891.59 627.86,894.15 626.72,897.99 627.68,898.27 626.26,903.06 624.73,904.7 \t\"/><circle class=\"st6\" cx=\"581.5\" cy=\"859.5\" r=\"4\"/><\/g><g id=\"cables\"><line class=\"st12\" x1=\"1024\" y1=\"404\" x2=\"1064.71\" y2=\"483\"/><polyline class=\"st12\" points=\"1269.5,740.5 1385.5,271.5 1245,742 \t\"/><line class=\"st13\" x1=\"1086\" y1=\"528\" x2=\"1160\" y2=\"679\"/><polyline class=\"st14\" points=\"1146,683 1083,558 1020,424 \t\"/><polyline class=\"st14\" points=\"1171,668 1110,544 1042,413 \t\"/><path class=\"st12\" d=\"M1385.5,271.5\"/><path class=\"st14\" d=\"M941.5,570.5l57.57-56.6c0.79-0.78,2.06-0.77,2.84,0.01L1014,526\"/><line class=\"st14\" x1=\"991.51\" y1=\"521.34\" x2=\"1006\" y2=\"535\"/><line class=\"st14\" x1=\"966.83\" y1=\"545.6\" x2=\"982\" y2=\"562\"/><line class=\"st14\" x1=\"945.51\" y1=\"566.56\" x2=\"960\" y2=\"583\"/><line class=\"st14\" x1=\"941.5\" y1=\"583.5\" x2=\"1007.43\" y2=\"519.43\"/><path class=\"st14\" d=\"M1016,525l-10.84-12.5c-1.24-1.43-1.22-3.55,0.04-4.96l12.99-14.52c0.98-1.1,2.68-1.14,3.72-0.1L1035,506\"/><line class=\"st14\" x1=\"1009.09\" y1=\"517.03\" x2=\"1026.26\" y2=\"497.26\"/><path class=\"st14\" d=\"M1041,500l-12.41-13.24c-1.42-1.51-1.3-3.9,0.25-5.26l53.16-46.8L1235,300l52.41-63.05c4.05-4.87,11.97-2.15,12.18,4.18L1300,254\"/><line class=\"st14\" x1=\"1082\" y1=\"435\" x2=\"1098\" y2=\"452\"/><line class=\"st14\" x1=\"1123\" y1=\"398.6\" x2=\"1139\" y2=\"417\"/><line class=\"st14\" x1=\"1163.57\" y1=\"362.89\" x2=\"1179\" y2=\"381\"/><line class=\"st14\" x1=\"1205.01\" y1=\"326.41\" x2=\"1219\" y2=\"341\"/><line class=\"st14\" x1=\"1235\" y1=\"300\" x2=\"1245\" y2=\"310\"/><line class=\"st14\" x1=\"1265.81\" y1=\"262.94\" x2=\"1278\" y2=\"274\"/><polyline class=\"st14\" points=\"1033.16,491.64 1088.79,443.5 1129,408 1171.28,371.94 1199,349 1213,334.74 1240,305 1271.39,268 1299.53,239.5 \t\"/><g><g><image style=\"overflow:visible;\" width=\"371.78\" height=\"357.91\" xlink:href=\"data:image/png;base64,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\" transform=\"matrix(1 0 0 1 939.4741 250.5089)\"/><\/g><\/g><line class=\"st12\" x1=\"710\" y1=\"444\" x2=\"1297\" y2=\"268\"/><line class=\"st12\" x1=\"718\" y1=\"459\" x2=\"1297\" y2=\"268\"/><rect x=\"1015.55\" y=\"402.94\" transform=\"matrix(0.9013 -0.4332 0.4332 0.9013 -75.7396 485.3013)\" class=\"st15\" width=\"23\" height=\"11.81\"/><path class=\"st16\" d=\"M1047.4,411.13l-29.79,14.32c-1.49,0.72-3.29,0.09-4-1.4v0c-0.72-1.49-0.09-3.29,1.4-4l29.79-14.32c1.49-0.72,3.29-0.09,4,1.4l0,0C1049.52,408.62,1048.89,410.41,1047.4,411.13z\"/><path class=\"st17\" d=\"M1030.34,403.43l-9.95,4.78c-1.73,0.83-3.81,0.1-4.65-1.63l-11.51-23.95c-0.83-1.73-0.1-3.81,1.63-4.65l9.95-4.78c1.73-0.83,3.81-0.1,4.65,1.63l11.51,23.95C1032.8,400.52,1032.07,402.6,1030.34,403.43z\"/><path class=\"st18\" d=\"M1012.77,374.59l-3.48,1.67c-1.16,0.56-2.54,0.07-3.1-1.09l-7.17-14.91c-0.56-1.16-0.07-2.54,1.09-3.1l3.48-1.67c1.16-0.56,2.54-0.07,3.1,1.09l7.17,14.91C1014.42,372.65,1013.93,374.03,1012.77,374.59z\"/><rect x=\"778.5\" y=\"520.5\" class=\"st19\" width=\"160\" height=\"4\"/><rect x=\"783.5\" y=\"513.5\" class=\"st20\" width=\"157\" height=\"6\"/><\/g><g id=\"cuerpo\"><polyline class=\"st21\" points=\"940,678.88 949.16,684.5 963,693 952,717 915,707 920,683 940,678.88 \t\"/><path class=\"st22\" d=\"M475.5,579.5v53.29V776c0,0-1.5,7,1.5,7s54,0,54,0l10,12h105l5-11h64v24h76v-22h71c0,0,10-16,14-39c13,0,17,0,17,0v-9c0,0,22,7,35-28c-8-5-8-5-8-5v-68l-201,2v-14l-120-1l-17.5,6.5V578L475.5,579.5z\"/><path class=\"st22\" d=\"M448.21,477.08L472,459h86l20,19v6v90h-34v-51h-8v7l-19.5,19.5L530,570v7h-50v-16l-8.5-8.5V485H447v-5.48C447,478.56,447.45,477.66,448.21,477.08z\"/><polygon class=\"st23\" points=\"632,591 645,591 649.65,593.74 650,599 642,605 632,605 \t\"/><rect x=\"597\" y=\"527\" class=\"st24\" width=\"27\" height=\"22\"/><path class=\"st25\" d=\"M687.79,453.32l14.71-9.82c0,0,7-4,10,3s6,14,6,14s1,4-4,7s-14,4-14,4l-13-7L687.79,453.32z\"/><path class=\"st26\" d=\"M645,606l34.38-144.32c0.65-2.74,3.19-4.68,6.13-4.68h5.09c2.78,0,5.33,1.46,6.65,3.8L764,579l-16.18-0.5l-42.8-70h-25.05l-25.05,97L645,606z\"/><rect x=\"772.5\" y=\"539.5\" class=\"st27\" width=\"9\" height=\"24\"/><polygon class=\"st20\" points=\"922.61,599.5 781,599.5 781,524.5 814.92,524.5 933.5,524.5 \t\"/><path class=\"st28\" d=\"M876.4,584.52l12.53-55.48c0.34-1.49,1.66-2.54,3.18-2.54h34.44c2.05,0,3.59,1.87,3.2,3.88l-10.74,55.48c-0.3,1.53-1.64,2.64-3.2,2.64h-36.23C877.49,588.5,875.94,586.56,876.4,584.52z\"/><line class=\"st29\" x1=\"814.5\" y1=\"599\" x2=\"814.5\" y2=\"524.5\"/><line class=\"st30\" x1=\"841.45\" y1=\"524.5\" x2=\"841.45\" y2=\"599\"/><path class=\"st14\" d=\"M829.56,599.5h-24.13c-1.62,0-2.94-1.31-2.94-2.94v-26.13c0-1.62,1.31-2.94,2.94-2.94h24.13c1.62,0,2.94,1.31,2.94,2.94v26.13C832.5,598.19,831.19,599.5,829.56,599.5z\"/><path class=\"st14\" d=\"M537.19,574h-42.88c-2.1,0-3.81-1.71-3.81-3.81v-24.38c0-2.1,1.71-3.81,3.81-3.81h42.88c2.1,0,3.81,1.71,3.81,3.81v24.38C541,572.29,539.29,574,537.19,574z\"/><path class=\"st31\" d=\"M451.81,562.5h-13.12c-1.21,0-2.19-0.98-2.19-2.19v-26.12c0-1.21,0.98-2.19,2.19-2.19h13.12c1.21,0,2.19,0.98,2.19,2.19v26.12C454,561.52,453.02,562.5,451.81,562.5z\"/><path class=\"st14\" d=\"M474.22,562.5h-14.44c-1.26,0-2.28-1.02-2.28-2.28v-25.94c0-1.26,1.02-2.28,2.28-2.28h14.44c1.26,0,2.28,1.02,2.28,2.28v25.94C476.5,561.48,475.48,562.5,474.22,562.5z\"/><path class=\"st14\" d=\"M795.8,599.5H694.2c-3.15,0-5.7-2.55-5.7-5.7v-20.6c0-3.15,2.55-5.7,5.7-5.7h101.6c3.15,0,5.7,2.55,5.7,5.7v20.6C801.5,596.95,798.95,599.5,795.8,599.5z\"/><path class=\"st14\" d=\"M860.56,599.5h-24.13c-1.62,0-2.94-1.31-2.94-2.94v-26.13c0-1.62,1.31-2.94,2.94-2.94h24.13c1.62,0,2.94,1.31,2.94,2.94v26.13C863.5,598.19,862.19,599.5,860.56,599.5z\"/><path class=\"st14\" d=\"M938.71,599.5h-21.43c-1.54,0-2.79-1.25-2.79-2.79v-26.43c0-1.54,1.25-2.79,2.79-2.79h21.43c1.54,0,2.79,1.25,2.79,2.79v26.43C941.5,598.25,940.25,599.5,938.71,599.5z\"/><path class=\"st14\" d=\"M909.75,599.5h-41.49c-2.07,0-3.75-1.68-3.75-3.75v-24.49c0-2.07,1.68-3.75,3.75-3.75h41.49c2.07,0,3.75,1.68,3.75,3.75v24.49C913.5,597.82,911.82,599.5,909.75,599.5z\"/><line class=\"st29\" x1=\"827.99\" y1=\"513.32\" x2=\"827.99\" y2=\"519.43\"/><line class=\"st29\" x1=\"884.99\" y1=\"513.32\" x2=\"884.99\" y2=\"519.43\"/><line class=\"st32\" x1=\"814.25\" y1=\"535.36\" x2=\"841.45\" y2=\"535.36\"/><rect x=\"829.5\" y=\"535.5\" class=\"st33\" width=\"10\" height=\"3\"/><rect x=\"834.5\" y=\"573.5\" class=\"st34\" width=\"7\" height=\"3\"/><path class=\"st35\" d=\"M818.35,581.5h-5.7c-1.19,0-2.15-0.96-2.15-2.15v-0.7c0-1.19,0.96-2.15,2.15-2.15h5.7c1.19,0,2.15,0.96,2.15,2.15v0.7C820.5,580.54,819.54,581.5,818.35,581.5z\"/><rect x=\"725\" y=\"576\" class=\"st22\" width=\"48\" height=\"27\"/><line class=\"st14\" x1=\"688.5\" y1=\"585.88\" x2=\"940\" y2=\"585.88\"/><polygon class=\"st36\" points=\"729,506 729,499 725,499 725,488 729,488 731,488 731,484 731,470 676,470 671,472 671,504 680,508 680,511 686,511 686,506 \t\"/><circle class=\"st25\" cx=\"684.5\" cy=\"459.5\" r=\"7\"/><circle class=\"st37\" cx=\"707.5\" cy=\"446.5\" r=\"3\"/><circle class=\"st37\" cx=\"714.5\" cy=\"460.5\" r=\"3\"/><polygon class=\"st38\" points=\"692,481 698,475 704,481 \t\"/><path class=\"st39\" d=\"M591,506c0,0,2-6,8-6s20,0,20,0s7-1,10,4s2.57,16.5,2.57,16.5L587,520C587,520,589,510,591,506z\"/><polygon class=\"st39\" points=\"635,530 585,530 585,520 587.37,520 635,520 \t\"/><polygon class=\"st24\" points=\"593,558 600,547 621,547 630,562 630,612.5 589.67,612.5 589.67,563 \t\"/><rect x=\"562.53\" y=\"536.52\" transform=\"matrix(0.7071 -0.7071 0.7071 0.7071 -200.6468 592.8869)\" class=\"st40\" width=\"105.65\" height=\"4.24\"/><rect x=\"643.5\" y=\"499.5\" class=\"st41\" width=\"27\" height=\"8\"/><rect x=\"475.5\" y=\"574.93\" class=\"st42\" width=\"105.99\" height=\"4.57\"/><polygon class=\"st40\" points=\"584.5,585.5 589.67,585.5 616.01,611.84 626.98,611.84 593.57,578.43 581.5,578.43 581.5,585.5 \t\"/><polygon class=\"st43\" points=\"438,591 438,563 488,563 488,574 475,574 469,591 \t\"/><line class=\"st14\" x1=\"436.5\" y1=\"547\" x2=\"454\" y2=\"547\"/><line class=\"st14\" x1=\"457.5\" y1=\"547\" x2=\"476.5\" y2=\"547\"/><line class=\"st14\" x1=\"490.5\" y1=\"560.6\" x2=\"541\" y2=\"560.6\"/><g><path class=\"st14\" d=\"M576.78,574h-29.57c-1.78,0-3.22-1.44-3.22-3.22v-25.57c0-1.78,1.44-3.22,3.22-3.22h29.57c1.78,0,3.22,1.44,3.22,3.22v25.57C580,572.56,578.56,574,576.78,574z\"/><line class=\"st14\" x1=\"544\" y1=\"560.6\" x2=\"580\" y2=\"560.6\"/><\/g><g><path class=\"st44\" d=\"M646.6,503.09l-18.08,18.01c-0.96,0.95-2.51,0.95-3.46-0.01l-9.35-9.38c-0.95-0.96-0.95-2.51,0.01-3.46l18.08-18.01c0.96-0.95,2.51-0.95,3.46,0.01l9.35,9.38C647.56,500.59,647.56,502.14,646.6,503.09z\"/><line class=\"st44\" x1=\"621.42\" y1=\"517.44\" x2=\"642.97\" y2=\"495.98\"/><\/g><g><path class=\"st45\" d=\"M667.62,499.91l-19.05-0.04c-1.47,0-2.65-1.19-2.65-2.66l0.05-24.58c0-1.47,1.19-2.65,2.66-2.65l19.05,0.04c1.47,0,2.65,1.19,2.65,2.66l-0.05,24.58C670.27,498.73,669.08,499.91,667.62,499.91z\"/><line class=\"st45\" x1=\"645.94\" y1=\"487.35\" x2=\"670.3\" y2=\"487.4\"/><\/g><g><path class=\"st46\" d=\"M623.84,525.83l-26.37,26.27c-1.22,1.21-3.19,1.21-4.4-0.01l-8.39-8.43c-1.21-1.22-1.21-3.19,0.01-4.4L611.06,513c1.22-1.21,3.19-1.21,4.4,0.01l8.39,8.43C625.06,522.65,625.06,524.62,623.84,525.83z\"/><line class=\"st46\" x1=\"589.91\" y1=\"548.91\" x2=\"620.69\" y2=\"518.26\"/><\/g><line class=\"st47\" x1=\"472.66\" y1=\"490.5\" x2=\"504\" y2=\"490.5\"/><line class=\"st47\" x1=\"471.5\" y1=\"511\" x2=\"504\" y2=\"511\"/><line class=\"st47\" x1=\"475\" y1=\"532\" x2=\"504\" y2=\"532\"/><line class=\"st47\" x1=\"482\" y1=\"564\" x2=\"482\" y2=\"490.71\"/><line class=\"st47\" x1=\"503.93\" y1=\"542\" x2=\"503.93\" y2=\"490.71\"/><line class=\"st47\" x1=\"447\" y1=\"480\" x2=\"578\" y2=\"480\"/><rect x=\"522\" y=\"518\" class=\"st48\" width=\"9\" height=\"12\"/><line class=\"st47\" x1=\"471\" y1=\"484\" x2=\"578\" y2=\"484\"/><line class=\"st47\" x1=\"560.62\" y1=\"484\" x2=\"560.62\" y2=\"500\"/><line class=\"st47\" x1=\"544\" y1=\"500\" x2=\"578\" y2=\"500\"/><line class=\"st47\" x1=\"536\" y1=\"524\" x2=\"536\" y2=\"484\"/><line class=\"st47\" x1=\"544\" y1=\"484\" x2=\"544\" y2=\"524\"/><polygon class=\"st49\" points=\"581.5,630.5 581.5,612.5 692.79,612.5 692.79,599.5 946,599.5 946,614.5 915.37,614.5 915.37,619.5 868.4,638.5 718.5,638.5 718.32,631.5 \t\"/><polygon class=\"st50\" points=\"477,612 547,612 568,721 865,721 865,725 564,726 543,616 477,616 \t\"/><path class=\"st50\" d=\"M475,621h65l22,110h330v16h-16c0,0-8,39-14,39s-71,0-71,0v22h-76v-24h-64l-6,11H541v-21h5l-16-140l-55-1V621z\"/><line class=\"st21\" x1=\"928\" y1=\"688\" x2=\"942\" y2=\"698\"/><line class=\"st51\" x1=\"1064.71\" y1=\"560\" x2=\"949\" y2=\"685\"/><path class=\"st51\" d=\"M1121.19,496.35c0,0,8.31,92.15-28.69,173.15c-31.6,69.18,8.67,154,8.67,154\"/><\/g><g id=\"cata\"><circle class=\"st52\" cx=\"1350\" cy=\"254\" r=\"39\"/><path class=\"st53\" d=\"M1334,232c0,0-3-3-1-5s7-5,7-5s4-2,6,2s2,10,1,12s-4,3-6,2S1334,232,1334,232z\"/><path class=\"st53\" d=\"M1320.88,247.76c0,0-4.11-1.05-3.41-3.79c0.7-2.74,3.48-7.87,3.48-7.87s2.42-3.76,6.18-1.34c3.76,2.42,6.82,7.59,6.97,9.82c0.16,2.23-1.91,4.62-4.14,4.78S1320.88,247.76,1320.88,247.76z\"/><path class=\"st53\" d=\"M1355.49,226.8c0,0,0.28-4.23,3.1-4.05c2.82,0.18,8.38,1.96,8.38,1.96s4.14,1.69,2.45,5.83c-1.69,4.14-6.2,8.1-8.36,8.67c-2.16,0.57-4.89-1.03-5.46-3.19C1355.03,233.86,1355.49,226.8,1355.49,226.8z\"/><path class=\"st53\" d=\"M1374.21,237.67c0,0,3.56-2.32,5.1,0.05c1.54,2.37,3.45,7.88,3.45,7.88s1.13,4.33-3.2,5.46c-4.33,1.13-10.2-0.11-11.95-1.5c-1.75-1.39-2.11-4.53-0.72-6.28C1368.29,241.52,1374.21,237.67,1374.21,237.67z\"/><path class=\"st53\" d=\"M1379.13,260.16c0,0,4.1,1.08,3.38,3.82s-3.54,7.84-3.54,7.84s-2.45,3.74-6.19,1.29c-3.74-2.45-6.76-7.64-6.9-9.87s1.95-4.6,4.18-4.75C1372.29,258.35,1379.13,260.16,1379.13,260.16z\"/><path class=\"st53\" d=\"M1367.23,278.94c0,0,2.45,3.46,0.14,5.1c-2.31,1.63-7.75,3.74-7.75,3.74s-4.28,1.29-5.57-2.99s-0.28-10.19,1.05-12c1.32-1.8,4.45-2.28,6.25-0.95C1363.15,273.16,1367.23,278.94,1367.23,278.94z\"/><path class=\"st53\" d=\"M1346.85,283.31c0,0,0.31,4.23-2.51,4.44s-8.57-0.8-8.57-0.8s-4.33-1.1-3.23-5.44c1.1-4.33,5.03-8.87,7.09-9.73c2.06-0.86,4.99,0.35,5.85,2.41C1346.34,276.26,1346.85,283.31,1346.85,283.31z\"/><circle class=\"st22\" cx=\"1350.5\" cy=\"254.5\" r=\"15\"/><path class=\"st22\" d=\"M1301,260l36-10l6-2l6-6l14,13l-46,48l-208.75,206.12L920,695v-46l118-135l252-221c0,0,13-5,8-17s-5-10-5-10L1301,260z\"/><circle class=\"st22\" cx=\"1350\" cy=\"255\" r=\"5\"/><circle class=\"st36\" cx=\"1303\" cy=\"268\" r=\"6\"/><line class=\"st36\" x1=\"1287.4\" y1=\"295.28\" x2=\"1305.64\" y2=\"314.21\"/><g><line class=\"st54\" x1=\"1161.19\" y1=\"405.97\" x2=\"1177\" y2=\"424\"/><g><line class=\"st32\" x1=\"1161.19\" y1=\"405.97\" x2=\"1174.93\" y2=\"421.64\"/><g><rect x=\"1171.52\" y=\"418.22\" transform=\"matrix(0.7519 -0.6593 0.6593 0.7519 13.5857 879.1366)\" width=\"6.6\" height=\"6.6\"/><\/g><\/g><\/g><g><line class=\"st54\" x1=\"1202.19\" y1=\"371.97\" x2=\"1218\" y2=\"390\"/><g><line class=\"st32\" x1=\"1202.19\" y1=\"371.97\" x2=\"1215.93\" y2=\"387.64\"/><g><rect x=\"1212.52\" y=\"384.22\" transform=\"matrix(0.7519 -0.6593 0.6593 0.7519 46.1743 897.7318)\" width=\"6.6\" height=\"6.6\"/><\/g><\/g><\/g><g><line class=\"st54\" x1=\"1121.19\" y1=\"440.97\" x2=\"1137\" y2=\"459\"/><g><line class=\"st32\" x1=\"1121.19\" y1=\"440.97\" x2=\"1134.93\" y2=\"456.64\"/><g><rect x=\"1131.52\" y=\"453.22\" transform=\"matrix(0.7519 -0.6593 0.6593 0.7519 -19.4141 861.4489)\" width=\"6.6\" height=\"6.6\"/><\/g><\/g><\/g><line class=\"st14\" x1=\"1108\" y1=\"509\" x2=\"1077.04\" y2=\"479.76\"/><rect x=\"1106.87\" y=\"469\" transform=\"matrix(0.7071 0.7071 -0.7071 0.7071 661.391 -649.7391)\" class=\"st55\" width=\"16.26\" height=\"9\"/><circle class=\"st56\" cx=\"1112.5\" cy=\"471.5\" r=\"2\"/><circle class=\"st56\" cx=\"1116.5\" cy=\"475.5\" r=\"2\"/><path class=\"st57\" d=\"M1288.57,325.87l-59.93,59.93c-1.74,1.74-4.56,1.74-6.3,0l-7.14-7.14c-1.74-1.74-1.74-4.56,0-6.3l59.93-59.93c1.74-1.74,4.56-1.74,6.3,0l7.14,7.14C1290.31,321.31,1290.31,324.13,1288.57,325.87z\"/><text transform=\"matrix(0.7051 -0.7091 0.7091 0.7051 1227.4376 381.2717)\" class=\"st58 st59 st60\">BEL-RAY<\/text><text transform=\"matrix(1 3.800000e-03 -3.800000e-03 1 741.478 685.5498)\" class=\"st59 st61\">495HR<\/text><text transform=\"matrix(1.3456 5.113242e-03 -3.800000e-03 1 743.478 698.6234)\" class=\"st62 st63 st64\">HIGH PERFORMANCE<\/text><text transform=\"matrix(1 8.870000e-03 -8.870000e-03 1 675.4225 490.7315)\" class=\"st58 st59 st65\">BUCYRUS<\/text><line class=\"st12\" x1=\"893\" y1=\"586\" x2=\"1323.1\" y2=\"225.77\"/><polygon class=\"st62\" points=\"740,691 811,691 811,693 825,688 740,688 \t\"/><\/g><g id=\"balde\"><path class=\"st66\" d=\"M1183.5,664.5l49,71c0,0,3,7,1,10s-3,4-2,6s-1,4-3,4s-6-3-6,0s-9,10-9,10l-13,4l-14-19l-15.64,1.22l-6.36-9.22c0,0,6-7,1-19c-7-12-16-31-16-31s-2-2-4-5c0,0-3-4-1-6s6-2,6-3s1-4,3-4s8-1,8-2s2-3,3-3s5,1,5,0s4-2,4-2s3-1,4-1s2-6,4-4\"/><rect x=\"1160.5\" y=\"685.5\" transform=\"matrix(0.8841 -0.4674 0.4674 0.8841 -195.5954 625.5355)\" class=\"st67\" width=\"5\" height=\"43\"/><rect x=\"1176.5\" y=\"678.5\" transform=\"matrix(0.8841 -0.4674 0.4674 0.8841 -190.4687 632.2019)\" class=\"st67\" width=\"5\" height=\"43\"/><rect x=\"1211.39\" y=\"710.23\" transform=\"matrix(0.8355 -0.5494 0.5494 0.8355 -202.4799 786.9996)\" class=\"st68\" width=\"4.03\" height=\"43\"/><path class=\"st67\" d=\"M1200.95,766.17l-10.13-13.26c-0.16-0.21-0.09-0.51,0.15-0.63l14.14-6.6c0.21-0.1,0.47,0,0.56,0.22l6.67,16.2c0.09,0.22-0.02,0.46-0.24,0.54l-7.58,2.84c-0.01,0-0.03,0.01-0.04,0.01l-3.1,0.81C1201.22,766.36,1201.05,766.3,1200.95,766.17z\"/><path class=\"st69\" d=\"M1192.5,770.5c0,0,2,1,4,0s7-7,9-8s5-1,7,0s5,3,8,7s4,7,7,8c5,1,16,2,18,6c2,3,2,12,0,14s-4,2.75-17,1.38s-48.92-19.7-48.92-19.7s-1.08-5.67,0.92-7.67s4.52-6.99,9-4C1192.5,769.5,1192.5,770.5,1192.5,770.5z\"/><polygon class=\"st67\" points=\"1225.5,793.5 1230.5,793.5 1233.5,779.5 1223.5,777.5 1222.5,780.5 \t\"/><path class=\"st70\" d=\"M1176.5,779.5l4.44-5.33c0.32-0.39,0.61-0.8,0.87-1.23c0.87-1.44,3.45-5.06,6.69-3.44c4,2,4,4,4,5c0,2.24-4.87,5-5.44,5C1186.5,779.5,1176.5,779.5,1176.5,779.5z\"/><polygon class=\"st71\" points=\"1169.5,730.5 1168.5,746.5 1170.5,748.5 1173.5,750.5 1186.5,750.5 \t\"/><path class=\"st72\" d=\"M1142.5,763.5l4-5c0,0,1-2,0-3s-4-3-2-6c4-4,8-7,8-7s4-2,5,1s2,3,3,3s4-4,4-4l3-3c0,0,4-2,7,0s5,9,1,11s-7,5-7,5s-1,1,0,2s3,3,3,3s1,2,0,3s-8,7-8,7h-4l-1-2l-1.48,2L1142.5,763.5z\"/><path d=\"M1110.96,895.5l-11.74-33l1.96-39l-2.94-4l-1.96-27c0,0-3.91-23,1.96-27s9.78-3,9.78-3l29.35,4c0,0,2.94-3,8.81-3c5.87,0,9.78,3,9.78,3s4.89,4,4.89,12c13.7,1,58.71,1,58.71,1h3.91l7.83,31l2.94,1l6.85,15v31l-1.96,1l-0.49,3l7.34-1v4l9.78,12l2.94,2v4l2.94,3v7l6.36,12l-21.36,5l-8.49-5h-99.8v3h-7.83v-3h-1.96v3h-9.78l-3.91-3v-5L1110.96,895.5z\"/><path class=\"st73\" d=\"M1255.5,896.5v-8l-17-24l4-3l17.12,23.78c0.57,0.79,0.88,1.74,0.88,2.72v8.5H1255.5z\"/><path class=\"st73\" d=\"M1239.5,903.5v4l18,3c0,0,8,2,10-2s2-7,0-9s-5-3-5-3s-2,1-1,2s5,3,4,5s-2,4-9,3S1239.5,903.5,1239.5,903.5z\"/><path class=\"st73\" d=\"M1267.5,909.5h17v-4c0,0-7-1-12-6s-8-5-10-5S1273.5,902.5,1267.5,909.5z\"/><polygon class=\"st73\" points=\"1218.5,900.5 1218.5,871.5 1229.5,871.5 1229.5,867.5 1236.5,867.5 1236.5,871.5 1234.5,873.5 1234.5,876.5 1249.5,891.5 1248.5,893.5 1239.5,890.5 1238.5,893.5 1255.5,899.5 1254.5,901.5 1259.5,902.5 1258.5,903.5 1243.5,903.5 1239.5,902.5 1218.5,902.5 \t\"/><rect x=\"1218.5\" y=\"867.5\" class=\"st73\" width=\"10\" height=\"3\"/><rect x=\"1210.5\" y=\"867.5\" class=\"st73\" width=\"6\" height=\"34\"/><path class=\"st74\" d=\"M1203.32,882.5h-58.64c-1.2,0-2.18-0.98-2.18-2.18v-4.64c0-1.2,0.98-2.18,2.18-2.18h58.64c1.2,0,2.18,0.98,2.18,2.18v4.64C1205.5,881.52,1204.52,882.5,1203.32,882.5z\"/><path class=\"st75\" d=\"M1203.88,890.5h-59.75c-0.9,0-1.62-0.73-1.62-1.62v-1.75c0-0.9,0.73-1.62,1.62-1.62h59.75c0.9,0,1.62,0.73,1.62,1.62v1.75C1205.5,889.77,1204.77,890.5,1203.88,890.5z\"/><path class=\"st76\" d=\"M1204.02,871.5h-84.04c-0.82,0-1.48-0.66-1.48-1.48v-0.04c0-0.82,0.66-1.48,1.48-1.48h84.04c0.82,0,1.48,0.66,1.48,1.48v0.04C1205.5,870.84,1204.84,871.5,1204.02,871.5z\"/><path class=\"st77\" d=\"M1204.5,895.5h-61c-0.55,0-1-0.45-1-1l0,0c0-0.55,0.45-1,1-1h61c0.55,0,1,0.45,1,1l0,0C1205.5,895.05,1205.05,895.5,1204.5,895.5z\"/><path class=\"st78\" d=\"M1140.5,900.5V877c0-0.28-0.22-0.5-0.5-0.5h-1c-0.28,0-0.5,0.22-0.5,0.5v23.5c0,0.28,0.22,0.5,0.5,0.5h1C1140.28,901,1140.5,900.78,1140.5,900.5z\"/><path class=\"st78\" d=\"M1127.5,898.5V875c0-0.28-0.22-0.5-0.5-0.5h-1c-0.28,0-0.5,0.22-0.5,0.5v23.5c0,0.28,0.22,0.5,0.5,0.5h1C1127.28,899,1127.5,898.78,1127.5,898.5z\"/><rect x=\"1118.5\" y=\"874.5\" class=\"st78\" width=\"5\" height=\"9\"/><rect x=\"1118.5\" y=\"885.5\" class=\"st79\" width=\"5\" height=\"7\"/><rect x=\"1118.5\" y=\"893.5\" class=\"st80\" width=\"5\" height=\"5\"/><rect x=\"1118.5\" y=\"899.5\" class=\"st80\" width=\"5\" height=\"5\"/><rect x=\"1129.5\" y=\"874.5\" class=\"st78\" width=\"5\" height=\"9\"/><rect x=\"1129.5\" y=\"885.5\" class=\"st79\" width=\"5\" height=\"7\"/><rect x=\"1129.5\" y=\"893.5\" class=\"st80\" width=\"5\" height=\"5\"/><rect x=\"1129.5\" y=\"899.5\" class=\"st80\" width=\"5\" height=\"5\"/><path class=\"st81\" d=\"M1107.5,872.5l5-2l1,17h-2c0,0-3-10-4-12S1107.5,872.5,1107.5,872.5z\"/><path class=\"st81\" d=\"M1103.5,863.5l10-3v7l-6,3c0,0-2,0-3-1s-2-5-2-5S1102.5,863.5,1103.5,863.5z\"/><path class=\"st81\" d=\"M1101.5,838.5h1c0,0,2,17,5,18s5,1,5,1v2l-9,2c0,0-2-1-2-3S1101.5,838.5,1101.5,838.5z\"/><path class=\"st81\" d=\"M1098.5,797.5c0,0,0-2,1-3s9-1,9-1s4,0,4,3s1,48,1,48s0,9-2,2s-3-13-7-18S1097.5,802.5,1098.5,797.5z\"/><path class=\"st81\" d=\"M1096.5,771.5c0,0,2-6,8-5s19,2,19,2l-10,12c0,0-1,1-1,5s0,6,0,6s-4-1-7-1s-3,0-5,1s-4,1-4,0S1096.5,771.5,1096.5,771.5z\"/><rect x=\"1114.5\" y=\"782.5\" class=\"st82\" width=\"20\" height=\"85\"/><rect x=\"1133.5\" y=\"782.5\" class=\"st83\" width=\"70\" height=\"85\"/><rect x=\"1202.5\" y=\"782.5\" class=\"st84\" width=\"19\" height=\"83\"/><path class=\"st84\" d=\"M1224.5,865.5h14v-30c0,0-3-8-5-14s-10-23-10-23L1224.5,865.5z\"/><path class=\"st85\" d=\"M1107.5,757.5v6l5,1c0,0,2.05-4.29,7-5c7-1,13,3,14,4l2.72,2.89l3.28-0.89v-2l1-2l2,2l1-1c0,0-1-5-6-7s-8-3-14-3S1110.5,754.5,1107.5,757.5z\"/><path class=\"st76\" d=\"M1133.5,759.5c0,0-1,2-2,1s-6-3-10-2c-1.88,0.47-3.54,0.94-4.77,1.31c-1.12,0.33-2.23-0.51-2.23-1.67v-1.78c0-0.6,0.3-1.17,0.82-1.48c0.34-0.2,0.76-0.38,1.18-0.38h11.82c0.12,0,0.24,0.01,0.36,0.04c0.89,0.19,4.82,1.08,4.82,1.96V759.5z\"/><polygon class=\"st71\" points=\"1147.5,760.5 1150.5,757.5 1156.5,764.5 1156.5,765.5 1154.5,765.5 \t\"/><path class=\"st71\" d=\"M1158.5,750.5l7-6l5,5l1-1l1,1l-9,8l-5-5C1158.5,752.5,1157.5,751.5,1158.5,750.5z\"/><circle class=\"st71\" cx=\"1172.5\" cy=\"744.5\" r=\"2\"/><rect x=\"1153.67\" y=\"753.48\" transform=\"matrix(0.7608 -0.649 0.649 0.7608 -214.6727 932.1592)\" class=\"st67\" width=\"6.82\" height=\"7.57\"/><circle class=\"st70\" cx=\"1210.5\" cy=\"770.5\" r=\"7\"/><circle class=\"st86\" cx=\"1186.5\" cy=\"774.5\" r=\"3\"/><circle class=\"st70\" cx=\"1237.5\" cy=\"789.5\" r=\"9\"/><path class=\"st67\" d=\"M1194.5,775.5c0,0,1,1,2,0s1-1,1-2s0-3,1-3s1-2,2-1s2,2,1,4s-1,4-3,5s-6,1-6,0S1193.5,775.5,1194.5,775.5z\"/><circle class=\"st86\" cx=\"1210.5\" cy=\"770.5\" r=\"4\"/><path class=\"st67\" d=\"M1201.5,776.57v-2.07l6,3h-5.07C1201.91,777.5,1201.5,777.09,1201.5,776.57z\"/><path class=\"st67\" d=\"M1212.5,777.5c0,0,4,0,6-3l1,1v3h-7V777.5z\"/><path class=\"st67\" d=\"M1188.17,749.08L1171,727.14c-0.26-0.33-0.16-0.82,0.22-1.01l19.65-10.29c0.34-0.18,0.77-0.03,0.93,0.32l11.44,25.74c0.15,0.34,0,0.73-0.33,0.89l-13.91,6.49C1188.7,749.41,1188.36,749.32,1188.17,749.08z\"/><path class=\"st86\" d=\"M1185.32,734.62l2.49-8.72c0.23-0.8,1.33-0.86,1.66-0.1l6.06,14.39c0.36,0.84-0.49,1.69-1.34,1.34l-6.93-2.89C1185.69,738,1184.85,736.26,1185.32,734.62z\"/><polygon class=\"st67\" points=\"1244.17,781.72 1234.82,778.18 1240.83,762.28 1243.63,763.34 1240.81,770.83 1244.55,772.24 1247.38,764.76 1250.18,765.82 \t\"/><path class=\"st67\" d=\"M1249.59,776.99l-1.47-0.6c-0.36-0.15-0.53-0.56-0.39-0.92l7.76-19.07c0.15-0.36,0.56-0.53,0.92-0.39l1.47,0.6c0.36,0.15,0.53,0.56,0.39,0.92l-7.76,19.07C1250.37,776.96,1249.95,777.14,1249.59,776.99z\"/><path class=\"st67\" d=\"M1232.59,772.99l-1.47-0.6c-0.36-0.15-0.53-0.56-0.39-0.92l7.76-19.07c0.15-0.36,0.56-0.53,0.92-0.39l1.47,0.6c0.36,0.15,0.53,0.56,0.39,0.92l-7.76,19.07C1233.37,772.96,1232.95,773.14,1232.59,772.99z\"/><path class=\"st67\" d=\"M1242.5,739.5c0,0,2-5,8-4s18,5,18,5h5v2h-5c0,0-1,2-1,3s1,2,1,2h1l-7,17c0,0,0,1-2,1s-4,0-4,0l-16-5c0,0-3-9-2-13S1242.5,739.5,1242.5,739.5z\"/><circle class=\"st87\" cx=\"1250.5\" cy=\"747.5\" r=\"7\"/><circle class=\"st67\" cx=\"1250.5\" cy=\"747.5\" r=\"3\"/><line class=\"st51\" x1=\"1246.88\" y1=\"741.51\" x2=\"1243.39\" y2=\"738.02\"/><line class=\"st88\" x1=\"1238.5\" y1=\"750.5\" x2=\"1246\" y2=\"750.5\"/><path class=\"st68\" d=\"M1209.87,745.59l4.16-2.77c0.26-0.18,0.62-0.12,0.81,0.14l2.37,3.16c0.16,0.22,0.13,0.52-0.08,0.7l-5.63,4.69l-2.15-3.59C1208.87,747.12,1209.1,746.1,1209.87,745.59z\"/><path class=\"st68\" d=\"M1214.77,754.3l3.27-2.45c0.27-0.2,0.64-0.17,0.88,0.06l3.04,3.04c0.29,0.29,0.25,0.77-0.07,1.01l-6.31,4.73c-0.44,0.33-1.07,0.02-1.07-0.54v-5.32C1214.5,754.62,1214.6,754.43,1214.77,754.3z\"/><polygon class=\"st68\" points=\"1173.5,713.5 1177.5,710.5 1181.5,717.5 1183.5,716.5 1184.5,718.5 1175.5,723.5 1174.5,721.5 1177.5,719.5 \t\"/><polygon class=\"st68\" points=\"1162.5,691.5 1167.5,689.5 1174.5,700.5 1173.5,701.5 1170.5,700.5 1167.5,701.5 \t\"/><polygon class=\"st68\" points=\"1160.5,690.5 1160.5,684.5 1164.5,688.5 \t\"/><path class=\"st68\" d=\"M1146.5,683.5l1-1l4.32-3.46c0.36-0.29,0.89-0.19,1.12,0.2l2.19,3.65c0.2,0.34,0.1,0.77-0.22,0.99l-5.42,3.61h-1.16c-1.02,0-1.84-0.82-1.84-1.84V683.5z\"/><polygon class=\"st68\" points=\"1202.5,711.5 1194.5,706.5 1193.5,707.5 1198.5,714.5 \t\"/><rect x=\"1183.58\" y=\"677.14\" transform=\"matrix(0.7922 -0.6103 0.6103 0.7922 -172.9647 865.6406)\" class=\"st89\" width=\"1.89\" height=\"19.28\"/><rect x=\"1185.32\" y=\"666.55\" transform=\"matrix(0.7922 -0.6103 0.6103 0.7922 -168.9536 865.9243)\" class=\"st90\" width=\"3.25\" height=\"28.97\"/><path class=\"st90\" d=\"M1205.5,713.5l2-2c0,0,2-1,3,1s15,23,15,23s2,3,1,4s-4,1-6-2S1205.5,713.5,1205.5,713.5z\"/><path class=\"st90\" d=\"M1208.5,744.5l4-2c0,0,1-3,0-3s-1-3-1-3l-14-20h-2L1208.5,744.5z\"/><\/g>";</script>
+<script>const MONTHS=[{"y": 2025, "m": 0, "h": 455.28}, {"y": 2025, "m": 1, "h": 584.49}, {"y": 2025, "m": 2, "h": 460.22}, {"y": 2025, "m": 3, "h": 342.03}, {"y": 2025, "m": 4, "h": 0.0}, {"y": 2025, "m": 5, "h": 254.4}, {"y": 2025, "m": 6, "h": 360.57}, {"y": 2025, "m": 7, "h": 577.83}, {"y": 2025, "m": 8, "h": 374.61}, {"y": 2025, "m": 9, "h": 474.28}, {"y": 2025, "m": 10, "h": 465.26}, {"y": 2025, "m": 11, "h": 287.34}, {"y": 2026, "m": 0, "h": 638.91}, {"y": 2026, "m": 1, "h": 498.43}, {"y": 2026, "m": 2, "h": 401.39}, {"y": 2026, "m": 3, "h": 506.11}, {"y": 2026, "m": 4, "h": 436.43}, {"y": 2026, "m": 5, "h": 496.69}, {"y": 2026, "m": 6, "h": 517.76}, {"y": 2026, "m": 7, "h": 0, "missing": true}, {"y": 2026, "m": 8, "h": 527.85}];
+'use strict';
+/* ═══ Datos y motor de cálculo · LubeCalc Pro v4 ═══
+   Fuente: Matriz_de_consumo_por_inyectores_SL-V_en_PAB12.xlsx
+     · hoja "Matriz PAB12-Actual SL-V"  → condición actual (camisas SL-V)
+     · hoja "FL-1"                      → condición anterior (inyector FL-1 al 100 %)
+   Horas: flujo_Ultra_granel.xlsx, hoja "2025", solo PAB12.            */
+
+const ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+const MES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+const SYS = {
+  A1: { name: 'Bujes de pluma', short: 'Bujes', pos: [950, 700], hue: '#F5B324', desc: 'Talón de pluma, shipper shaft y catalinas de silla' },
+  A2: { name: 'Rodado · propulsión', short: 'Rodado', pos: [700, 860], hue: '#4FA3FF', desc: 'Rodados, ruedas tensoras y bujes de pin central. Dosifica distinto al excavar y al trasladar' },
+  B1: { name: 'Engranajes de levante', short: 'Levante', pos: [640, 650], hue: '#FFD066', desc: 'Transmisión hoist' },
+  B2: { name: 'Giro y empuje', short: 'Giro', pos: [760, 790], hue: '#5CD68A', desc: 'Corona de giro, pistas roller, TX crowd, golilla de pin y saddle block' },
+  C1: { name: 'Antifricción · estructura', short: 'Estruct.', pos: [1110, 555], hue: '#FF8A5B', desc: 'Rodamientos de empuje, giro, dipper trip, hoist, pluma, A-frame y guía de cable' },
+  C2: { name: 'Antifricción · motrices', short: 'Motrices', pos: [900, 860], hue: '#FF6B6B', desc: 'Rodamientos de ruedas motrices, ambos lados' },
+};
+
+const LUBES = {
+  ultra: { name: 'Molylube Ultra Open Gear', short: 'Ultra', dens: 0.98 },
+  term: { name: 'Termalene Multipurpose Extreme Pressure Grease', short: 'Termalene', dens: 0.858 },
+};
+
+/* Dosificación por tipo de inyector y ajuste: [etiqueta, cc por disparo, color] */
+const GREY = '#94A3B8';
+const INJ = {
+  'SL-V': [['Camisa roja', 0.5, '#E0453B'], ['Camisa púrpura', 1.25, '#A66BE0'], ['Camisa verde', 1.25, '#3FBF6F'], ['Sin ajuste · 100 %', 1.31, GREY]],
+  'FL-1': [['2 hilos · 25 %', 0.41, '#E0453B'], ['4 hilos · 50 %', 0.82, '#A66BE0'], ['6 hilos · 75 %', 1.23, '#3FBF6F'], ['Sin ajuste · 100 %', 1.61, GREY]],
+  'FL-11': [['3 hilos · 25 %', 2.05, '#E0453B'], ['6 hilos · 50 %', 4.1, '#A66BE0'], ['9 hilos · 75 %', 6.15, '#3FBF6F'], ['Sin ajuste · 100 %', 8.2, GREY]],
+  'FL-32': [['Estándar', 0.131, GREY]],
+};
+const CUSTOM = 'Personalizado';
+
+/* Timers de referencia (min) según la matriz actual */
+const T_REF = { A1: 30, A2dig: 30, A2prop: 3, B1: 15, B2: 10, C1: 20, C2: 2 };
+
+const n = (v) => { const x = parseFloat(v); return Number.isFinite(x) ? x : 0; };
+const optOf = (type, adj) => { const f = INJ[type].find((a) => a[0] === adj); return { type, adj, cc: f[1] }; };
+const colorOf = (sel) => { const f = (INJ[sel.type] || []).find((a) => a[0] === sel.adj); return f ? f[2] : GREY; };
+
+function mkInj() {
+  let id = 0;
+  const V = 'Camisa verde', ROJ = 'Camisa roja', S = 'Sin ajuste · 100 %';
+  const now = (t, a) => optOf(t, a);
+  /* R(sistema, componente, cantidad, actual, anterior?)  — si no hay "anterior", el SL-V pasa a FL-1 al 100 % */
+  const R = (system, name, qty, cur, old) => ({
+    id: ++id, system, name, qty,
+    now: cur,
+    old: old || (cur.type === 'SL-V' ? optOf('FL-1', S) : { ...cur }),
+  });
+  return [
+    R('A1', 'Talón pluma LI / LD', 2, now('SL-V', V)),
+    R('A1', 'Shipper Shaft derecho', 1, now('SL-V', S)),
+    R('A1', 'Shipper Shaft izquierdo', 1, now('SL-V', S)),
+    R('A1', 'Catalinas silla', 8, now('SL-V', V)),
+
+    R('A2', 'Rodado derecho', 18, now('SL-V', ROJ)),
+    R('A2', 'Rueda tensora derecha', 2, now('FL-11', S)),
+    R('A2', 'Buje pin central derecho', 3, now('SL-V', S)),
+    R('A2', 'Rodado izquierdo', 18, now('SL-V', ROJ)),
+    R('A2', 'Rueda tensora izquierda', 2, now('FL-11', S)),
+    R('A2', 'Buje pin central izquierdo', 3, now('SL-V', S)),
+
+    R('B1', 'Tx-Hoist', 12, now('SL-V', V)),
+
+    R('B2', 'Tx-Crowd', 4, now('SL-V', V)),
+    R('B2', 'Corona de giro derecho', 6, now('SL-V', V)),
+    R('B2', 'Pista roller giro derecho', 2, now('SL-V', S)),
+    R('B2', 'Corona de giro izquierdo', 6, now('SL-V', V)),
+    R('B2', 'Pista roller giro izquierdo', 2, now('SL-V', S)),
+    R('B2', 'Golilla de pin central', 2, now('SL-V', S)),
+    R('B2', 'Saddle block', 18, now('SL-V', V)),
+
+    R('C1', 'Tx-Crowd lado derecho', 3, now('SL-V', S)),
+    R('C1', 'Tx-Crowd lado izquierdo', 2, now('SL-V', S)),
+    R('C1', 'Tx-giro derecho', 2, now('SL-V', S)),
+    R('C1', 'Tx-giro izquierdo', 2, now('SL-V', S)),
+    R('C1', 'Dipper Trip', 3, now('SL-V', S)),
+    R('C1', 'Tx-Hoist', 2, now('SL-V', S)),
+    R('C1', 'Pluma', 2, now('SL-V', S)),
+    R('C1', 'Punto FL-32 (sin nombre en matriz)', 4, now('FL-32', 'Estándar')),
+    R('C1', 'A-Frame', 4, now('FL-32', 'Estándar')),
+    R('C1', 'Rodillos guía cable', 8, now('FL-32', 'Estándar')),
+
+    R('C2', 'Ruedas motrices derecha', 4, now('SL-V', S)),
+    R('C2', 'Ruedas motrices izquierda', 4, now('SL-V', S)),
+  ];
+}
+
+function makeState() {
+  return {
+    hoursDay: 14.41, propel: 10, period: 'all', sel: 'A2', selMonth: null,
+    dens: { ultra: LUBES.ultra.dens, term: LUBES.term.dens },
+    lube: { A1: 'ultra', A2: 'ultra', B1: 'ultra', B2: 'ultra', C1: 'term', C2: 'term' },
+    t: { ...T_REF },
+    inj: mkInj(), nextId: 1000,
+    months: MONTHS.map((m) => ({ ...m })),
+    open: { A2: true },
+    flujoBase: 384.1,
+    lab: { row: null, type: 'SL-V', adj: 'Camisa verde' },
+  };
+}
+
+/* Ciclos por hora. A2 mezcla excavar (estático) y trasladar según el % de propulsión. */
+function cphOf(st, s) {
+  const per = (min) => (min > 0 ? 60 / min : 0);
+  if (s === 'A2') {
+    const p = st.propel / 100;
+    const dig = (1 - p) * per(st.t.A2dig), mov = p * per(st.t.A2prop);
+    return { dig, mov, total: dig + mov };
+  }
+  const c = per(st.t[s]);
+  return { dig: c, mov: 0, total: c };
+}
+
+/* Consumo por sistema y total, para la condición actual (now) y la anterior (old).
+   cc/h = cc por ciclo × ciclos/h ;  g/h = cc/h × densidad del lubricante del sistema */
+function compute(st) {
+  const sys = {};
+  const tot = { now: { g: 0, cc: 0, ultra: 0, term: 0 }, old: { g: 0, cc: 0, ultra: 0, term: 0 } };
+  for (const s of ORDER) {
+    const lube = st.lube[s], dens = n(st.dens[lube]), cph = cphOf(st, s);
+    const o = { cph, lube, dens, qty: 0 };
+    for (const r of st.inj) if (r.system === s) o.qty += n(r.qty);
+    for (const k of ['now', 'old']) {
+      let cc = 0;
+      for (const r of st.inj) if (r.system === s) cc += n(r.qty) * n(r[k].cc);
+      const ccH = cc * cph.total, gH = ccH * dens;
+      o[k] = { cc, ccH, gH };
+      tot[k].g += gH; tot[k].cc += ccH; tot[k][lube] += gH;
+    }
+    if (s === 'A2') {
+      const stat = st.t.A2dig > 0 ? 60 / st.t.A2dig : 0;
+      o.staticOnly = o.now.cc * stat * dens;
+      o.propelExtra = o.now.gH - o.staticOnly;
+    }
+    sys[s] = o;
+  }
+  return { sys, tot };
+}
+
+function periodMonths(st) {
+  return st.months.map((m, i) => ({ ...m, i })).filter((m) => st.period === 'all' || String(m.y) === st.period);
+}
+function periodHours(st) { return periodMonths(st).reduce((t, m) => t + n(m.h), 0); }
+
+if (typeof module !== 'undefined') module.exports = { ORDER, SYS, LUBES, INJ, T_REF, makeState, compute, cphOf, periodHours };
+</script>
+<script>'use strict';
+/* ═══ Interfaz · LubeCalc Pro v4 (JavaScript puro, sin dependencias) ═══ */
+
+const $ = (id) => document.getElementById(id);
+const fmt = (v, d = 1) => (Number.isFinite(v) ? v.toLocaleString('es-CL', { minimumFractionDigits: d, maximumFractionDigits: d }) : '—');
+const sgn = (p) => (p < 0 ? '−' : '+') + fmt(Math.abs(p) * 100, 0) + ' %';
+const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const num2 = (v) => String(v).replace('.', ',');
+const PLOT = 176;
+
+const ICONS = {
+  minus: '<path d="M5 12h14"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>',
+  x: '<path d="M6 6l12 12M18 6L6 18"/>',
+  reset: '<path d="M4 12a8 8 0 1 0 2.6-5.9M4 4.5v4.8h4.8"/>',
+  play: '<path d="M8 5.5v13l11-6.5z" fill="currentColor"/>',
+  pause: '<path d="M8 5v14M16 5v14"/>',
+  fire: '<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .3 1.5 1 2 1.8 2C10.5 8 11 5.5 12 3z"/>',
+};
+const ic = (name, size = 18) =>
+  `<svg class="ic" viewBox="0 0 24 24" width="${size}" height="${size}" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[name]}</svg>`;
+
+let state = makeState();
+let C = null;
+const sim = { running: false, elapsed: 0, speed: 1, last: 0 };
+const app = $('app');
+
+/* ───────── estructura ───────── */
+function shovelHtml() {
+  const hots = ORDER.map((s) => {
+    const [x, y] = SYS[s].pos, h = SYS[s].hue;
+    return `<g class="hot" data-hot="${s}" id="hot-${s}" role="button" tabindex="0" aria-label="${s} ${esc(SYS[s].name)}">
+      <circle class="ring" id="ring-${s}" cx="${x}" cy="${y}" r="14" fill="${h}"/>
+      <circle id="hc-${s}" cx="${x}" cy="${y}" r="19" fill="#0A1220" stroke="${h}" stroke-width="4"/>
+      <circle id="hd-${s}" cx="${x}" cy="${y}" r="8" fill="${h}"/>
+      <rect id="hr-${s}" x="${x - 22}" y="${y - 50}" width="44" height="26" rx="6" fill="#0A1220" opacity=".88"/>
+      <text id="ht-${s}" x="${x}" y="${y - 31}" text-anchor="middle" font-size="20" fill="${h}">${s}</text>
+      <circle cx="${x}" cy="${y}" r="44" fill="transparent"/></g>`;
+  }).join('');
+  const flows = ORDER.map((s) => `<path class="flowline" d="M600 745 L${SYS[s].pos[0]} ${SYS[s].pos[1]}" stroke="${SYS[s].hue}" stroke-width="3" fill="none" opacity=".75"/>`).join('');
+  return `<svg id="shovel" viewBox="425 200 976 722" role="img" aria-label="Pala eléctrica Bucyrus 495HR con sus seis sistemas de lubricación">
+    <g>${PALA_INNER}</g>
+    <path d="M425 906 H1401" stroke="#243451" stroke-width="3"/>
+    <rect id="trackfx" x="560" y="795" width="356" height="102" rx="51" fill="none" stroke="#4FA3FF" stroke-width="9" stroke-linecap="round" class="tracks" opacity="0"/>
+    <g id="flows" hidden>${flows}</g>
+    <rect x="566" y="729" width="68" height="32" rx="6" fill="#0A1220" stroke="#4FA3FF" stroke-width="3"/>
+    <text x="600" y="751" text-anchor="middle" font-size="16" font-weight="800" fill="#4FA3FF" style="font-family:var(--display)">BOMBA</text>
+    ${hots}</svg>`;
+}
+
+function stepper(key, label, sub) {
+  return `<div class="stepper"><div class="lbl"><b>${label}</b><span>${sub} <button class="changed" data-treset="${key}" hidden>restablecer</button></span></div>
+    <div class="ctl"><button data-t="${key}" data-d="-1" aria-label="Menos tiempo, ${label}">${ic('minus', 16)}</button>
+    <input type="number" inputmode="decimal" min="1" step="1" data-tin="${key}" aria-label="Frecuencia en minutos, ${label}"><button data-t="${key}" data-d="1" aria-label="Más tiempo, ${label}">${ic('plus', 16)}</button></div></div>`;
+}
+
+function cardHtml(s) {
+  const timers = s === 'A2'
+    ? stepper('A2dig', 'Excavar (estático)', `ref. ${T_REF.A2dig} min`) + stepper('A2prop', 'Trasladar (propulsión)', `ref. ${T_REF.A2prop} min`)
+    : stepper(s, 'Frecuencia de lubricación', `ref. ${T_REF[s]} min`);
+  return `<article class="panel sc" id="sc-${s}" data-card="${s}" style="--c:${SYS[s].hue}" aria-selected="false">
+    <div class="id">
+      <div><span class="code">${s}</span><div class="name">${SYS[s].name}</div><div class="lube" id="sc-${s}-lube"></div></div>
+      <div class="score"><b id="sc-${s}-save" class="num">—</b><span>con FL-1</span></div>
+    </div>
+    <div class="dual">
+      <div class="bar slv"><span class="k">SL-V</span><div class="track"><div class="fill" id="sc-${s}-bn"></div></div><span class="v num" id="sc-${s}-vn"></span></div>
+      <div class="bar fl1"><span class="k">FL-1</span><div class="track"><div class="fill" id="sc-${s}-bo"></div></div><span class="v num" id="sc-${s}-vo"></span></div>
+    </div>
+    <div class="timers">${timers}</div>
+    ${s === 'A2' ? '<p class="note" id="sc-A2-note"></p>' : ''}
+    <div class="facts"><div><b class="num" id="sc-${s}-cph">0</b>ciclos/h</div><div><b class="num" id="sc-${s}-cc">0</b>cc por ciclo</div><div><b class="num" id="sc-${s}-kg">0</b>kg en el periodo</div></div>
+    <div class="chips" id="sc-${s}-chips"></div>
+  </article>`;
+}
+
+function skeleton() {
+  const cols = state.months.map((m, i) =>
+    `<button class="col" id="mc-${i}" data-m="${i}" aria-pressed="false"><div class="bars"><div class="b slv" id="bs-${i}"></div><div class="b fl1" id="bf-${i}"></div></div><div class="m">${MES[m.m]}<small>${m.missing ? 'sin dato' : m.y}</small></div></button>`).join('');
+  const hrs = state.months.map((m, i) =>
+    `<label>${MES[m.m]} ${m.y}${m.missing ? ' · sin dato en el archivo' : ''}<input class="field num" type="number" min="0" step="0.01" data-hin="${i}" value="${m.h}"></label>`).join('');
+  const lubeSel = ORDER.map((s) =>
+    `<label style="--c:${SYS[s].hue}"><b>${s}</b><select class="field" data-ls="${s}"><option value="ultra">Ultra</option><option value="term">Termalene</option></select></label>`).join('');
+
+  return `
+  <header class="top"><div class="wrap">
+    <div class="bar">
+      <div class="brand"><div class="mark"><span>LC</span></div><div><h1>LubeCalc Pro</h1><p>Shovel Edition · PAB12 · Los Bronces</p></div></div>
+      <button class="btn sm ghost" id="reset">${ic('reset', 16)}<span>Restablecer</span></button>
+    </div>
+    <nav class="nav" aria-label="Secciones"><a href="#pala">Pala</a><a href="#scorecards">Scorecards</a><a href="#comparacion">Comparación</a><a href="#inyectores">Inyectores</a><a href="#laboratorio">Laboratorio</a><a href="#vivo">Turno en vivo</a><a href="#parametros">Parámetros</a></nav>
+  </div></header>
+
+  <main class="wrap">
+    <section id="pala" class="panel hero">
+      <div class="stage">
+        <div class="stage-top"><p>Toca un sistema en la pala. El pulso sigue la frecuencia real de cada uno.</p></div>
+        ${shovelHtml()}
+        <div class="syslegend">${ORDER.map((s) => `<button data-pick="${s}" style="--c:${SYS[s].hue}" aria-pressed="false"><b>${s}</b><small>${SYS[s].short}</small></button>`).join('')}</div>
+      </div>
+      <div class="side">
+        <div class="kpi">
+          <span class="lbl">Consumo de la pala por hora operada · condición actual (SL-V)</span>
+          <div class="big"><b id="k-now">0</b><span>g/h</span></div>
+          <div class="vs"><span>Antes con FL-1</span><span class="fl1 num" id="k-old">0</span><span class="num" style="color:var(--muted)">g/h</span><span class="tag" id="k-tag"></span></div>
+          <span class="lbl" id="k-sub"></span>
+          <span class="lbl" id="k-basis"></span>
+        </div>
+        <div class="slider">
+          <div class="h2">Control de propulsión · A2</div>
+          <div class="stop"><b class="num" id="p-val">10<small> %</small></b><span>del tiempo se traslada. Solo afecta a A2.</span></div>
+          <input type="range" id="propel" min="0" max="100" step="1" aria-label="Porcentaje de propulsión">
+          <div class="ends"><span>Solo excava</span><span>Solo traslada</span></div>
+        </div>
+        <div class="detail" id="detail">
+          <div class="head"><b id="d-code">A2</b><span id="d-name"></span></div>
+          <div class="row"><b class="num" id="d-g">0</b><span>g/h</span><span class="tag" id="d-tag"></span></div>
+          <span class="pill" id="d-lube"></span>
+          <div class="minis"><div class="mini"><b class="num" id="d-qty">0</b><span>inyectores</span></div><div class="mini"><b class="num" id="d-cc">0</b><span>cc por ciclo</span></div><div class="mini"><b class="num" id="d-cph">0</b><span>ciclos/h</span></div></div>
+          <p class="note" id="d-note" hidden></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="scorecards">
+      <h2>Scorecard por sistema</h2>
+      <p class="sub">Cada tarjeta compara el consumo actual con el de FL-1 y deja ajustar la frecuencia de lubricación. Todo el tablero se recalcula al instante.</p>
+      <div class="cards">${ORDER.map(cardHtml).join('')}</div>
+    </section>
+
+    <section id="comparacion" class="panel pad">
+      <div class="stage-top" style="align-items:flex-start;flex-wrap:wrap">
+        <div><h2>Consumo mensual · SL-V actual vs FL-1 anterior</h2>
+        <p class="sub">Horas operacionales de la PAB12 del flujo Ultra granel. Gramos = cc × densidad de cada lubricante.</p></div>
+        <div class="seg" id="period" role="group" aria-label="Periodo"><button data-p="2025" aria-pressed="false">2025</button><button data-p="2026" aria-pressed="false">2026</button><button data-p="all" aria-pressed="true">Ambos</button></div>
+      </div>
+      <div class="tstrip">
+        <div class="tot"><span class="k">Horas operadas en el periodo</span><span class="v num" id="t-h"></span></div>
+        <div class="tot"><span class="k">Actual · SL-V</span><span class="v num" id="t-now" style="color:var(--amber)"></span></div>
+        <div class="tot"><span class="k">Anterior · FL-1</span><span class="v num" id="t-old" style="color:var(--steel-2)"></span></div>
+        <div class="tot"><span class="k">Variación con FL-1</span><span class="v num" id="t-diff"></span><span class="tag" id="t-tag" style="justify-self:start"></span></div>
+      </div>
+      <div class="legend"><span><i style="background:var(--amber)"></i>SL-V actual</span><span><i style="background:var(--steel)"></i>FL-1 anterior</span><span>kg por mes</span></div>
+      <div class="chart"><div class="inner" id="chart">${cols}</div></div>
+      <p class="note" id="mread" style="margin-top:10px"></p>
+      <div class="lhd"><h3>Evolución mensual por lubricante</h3>
+        <div class="llegend"><span><svg width="26" height="8" aria-hidden="true"><path d="M1 4H25" stroke="var(--amber)" stroke-width="3" stroke-linecap="round"/></svg>SL-V actual</span><span><svg width="26" height="8" aria-hidden="true"><path d="M1 4H25" stroke="var(--steel)" stroke-width="3" stroke-dasharray="5 4" stroke-linecap="round"/></svg>FL-1 anterior</span><span>kg por mes</span></div></div>
+      <p class="lhint">Desliza cada gráfico hacia el lado para ver todos los meses.</p>
+      <div class="lines" id="lines"></div>
+      <div class="tfoot">
+        <div class="split" id="t-split"></div>
+        <p class="note" id="t-flujo"></p>
+      </div>
+      <details class="hours"><summary>Horas operacionales por mes (editables)</summary><div class="hrs">${hrs}</div></details>
+    </section>
+
+    <section id="inyectores">
+      <h2>Inyectores por sistema</h2>
+      <p class="sub">Condición actual (SL-V con camisas) y condición anterior (FL-1) lado a lado. Cambia cantidad, tipo, ajuste o cc de cada punto.</p>
+      <div class="inv" id="inv"></div>
+    </section>
+
+    <section id="laboratorio" class="panel pad">
+      <h2>Laboratorio de inyector</h2>
+      <p class="sub">Elige un punto, cambia el tipo o la camisa y mira cuánta grasa entrega y cómo mueve el consumo de la pala.</p>
+      <div class="lab">
+        <div class="vis" id="lab-vis"></div>
+        <div class="form">
+          <label class="block">Punto de lubricación<select class="field" id="lab-row"></select></label>
+          <div><div class="pill" style="margin-bottom:5px">Tipo de inyector</div><div class="opts" id="lab-types"></div></div>
+          <div><div class="pill" style="margin-bottom:5px">Ajuste de dosificación</div><div class="adjs" id="lab-adjs"></div></div>
+          <div class="delta" id="lab-delta"></div>
+          <div style="display:flex;gap:8px"><button class="btn" id="lab-fire">${ic('fire', 16)}<span>Disparar</span></button><button class="btn primary" style="flex:1" id="lab-apply">Aplicar al inventario</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="vivo" class="panel pad">
+      <div class="stage-top" style="flex-wrap:wrap;align-items:flex-start"><div><h2>Turno en vivo</h2><p class="sub" id="v-sub"></p></div>
+        <div class="live-ctl"><div class="seg" id="v-speed"><button data-sp="1" aria-pressed="true">1×</button><button data-sp="2" aria-pressed="false">2×</button><button data-sp="4" aria-pressed="false">4×</button></div>
+        <button class="btn primary" id="v-play"></button><button class="btn icon" id="v-reset" aria-label="Reiniciar turno">${ic('reset', 16)}</button></div></div>
+      <div class="live">
+        <div class="race">
+          <div class="lane slv"><span class="k" style="color:var(--amber)">SL-V</span><div class="track"><div class="fill" id="v-bn"></div><span class="val num" id="v-vn"></span></div></div>
+          <div class="lane fl1"><span class="k" style="color:var(--steel-2)">FL-1</span><div class="track"><div class="fill" id="v-bo"></div><span class="val num" id="v-vo"></span></div></div>
+        </div>
+        <div style="display:grid;gap:8px;align-content:center">
+          <div class="bigsave"><b class="num" id="v-save">0</b><span>kg menos con SL-V en este turno</span></div>
+          <div class="prog"><i id="v-prog"></i></div>
+          <div style="display:flex;justify-content:space-between;font-size:12.5px;color:var(--muted)"><span id="v-time"></span><span id="v-cyc"></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="parametros" class="pgrid">
+      <div class="panel pad fieldset"><h2>Densidad por lubricante</h2>
+        <label>Molylube Ultra Open Gear · A1, A2, B1, B2<input class="field num" type="number" step="0.001" min="0.5" max="1.5" id="d-ultra"><small>g/cc</small></label>
+        <label>Termalene Multipurpose Extreme Pressure Grease · C1, C2<input class="field num" type="number" step="0.001" min="0.5" max="1.5" id="d-term"><small>g/cc</small></label>
+      </div>
+      <div class="panel pad fieldset"><h2>Lubricante de cada sistema</h2><div class="lubesys">${lubeSel}</div><p class="note" style="margin:0"><b>Ultra</b> = ${LUBES.ultra.name}<br><b>Termalene</b> = ${LUBES.term.name}</p></div>
+      <div class="panel pad fieldset"><h2>Referencias</h2>
+        <label>Horas por día (turno en vivo)<input class="field num" type="number" step="0.01" min="1" max="24" id="p-hd"></label>
+        <label>Base del flujo Ultra granel<input class="field num" type="number" step="0.1" min="0" id="p-flujo"><small>g/h por pala, columna Gr/hora del archivo</small></label>
+      </div>
+    </section>
+
+    <details class="panel notes"><summary>Cómo se calcula y notas sobre los datos</summary><div class="body">
+      <p><b>Cálculo.</b> ciclos/h = 60 ÷ frecuencia. cc/h = cc por ciclo × ciclos/h. g/h = cc/h × densidad del lubricante del sistema. En A2, ciclos/h = (1 − %prop) × 60 ÷ timer de excavar + %prop × 60 ÷ timer de trasladar.</p>
+      <p><b>Catalinas silla.</b> En la matriz Excel están dentro de A1 (así cuadra el total de 30,24 cc/h). En el informe y el brief inicial aparecían en A2. Puedes moverlas con el selector de sistema de cada fila.</p>
+      <p><b>C2 a 2 min.</b> La matriz usa 2 minutos; el informe PAB12 muestra 3. Se tomó la matriz como referencia; el botón restablecer vuelve a ese valor.</p>
+      <p><b>Hoja FL-1, sistema B2.</b> La celda de B2 en la hoja FL-1 mantiene 302,16 cc/h, que es el valor de SL-V. Con 40 inyectores a 1,61 cc cada 10 min corresponde 386,4 cc/h; la app usa el valor calculado.</p>
+      <p><b>Horas.</b> Hoja 2025 del flujo Ultra granel, solo PAB12: enero–diciembre 2025 y luego enero–julio y septiembre 2026. Agosto 2026 no aparece en el archivo; ingresa las horas en el panel de la comparación si las tienes. Mayo 2025 figura con 0 horas.</p>
+    </div></details>
+  </main>`;
+}
+
+/* ───────── actualización ───────── */
+function setTag(el, now, old) {
+  if (!(old > 0 && now > 0)) { el.textContent = '—'; el.className = 'tag neutral'; return; }
+  const p = (old - now) / now;            /* variación del consumo si se usara FL-1 en vez de SL-V */
+  el.textContent = `${sgn(p)} con FL-1`;
+  el.className = 'tag ' + (p > 0 ? 'bad' : 'ok');
+}
+const periodLabel = () => (state.period === 'all' ? '2025 y 2026' : state.period);
+
+function refresh() {
+  C = compute(state);
+  updateHero(); updateCards(); updateMonthly(); updateInvSums(); renderLabDelta(); paintShovel(); renderLive();
+}
+
+function updateHero() {
+  const P = periodHours(state), t = C.tot;
+  $('k-now').textContent = fmt(t.now.g, 0);
+  $('k-old').textContent = fmt(t.old.g, 0);
+  setTag($('k-tag'), t.now.g, t.old.g);
+  $('k-basis').textContent = `Tasa por hora de operación: no depende de las horas. Ciclos por hora (60 ÷ timer) × cc por ciclo × densidad; el A2 mezcla ${100 - state.propel} % excavando y ${state.propel} % trasladando. Las horas solo la convierten en kg.`;
+  $('k-sub').textContent = `${fmt((t.now.g * state.hoursDay) / 1000, 1)} kg por día de ${fmt(state.hoursDay, 2)} h · ${fmt((t.now.g * P) / 1000, 0)} kg en ${periodLabel()}`;
+  $('p-val').innerHTML = `${state.propel}<small> %</small>`;
+  const sl = $('propel'); sl.value = state.propel; sl.style.setProperty('--v', state.propel + '%');
+  updateDetail();
+}
+
+function updateDetail() {
+  const s = state.sel, o = C.sys[s];
+  $('detail').style.setProperty('--c', SYS[s].hue);
+  $('d-code').textContent = s; $('d-name').textContent = SYS[s].name;
+  $('d-g').textContent = fmt(o.now.gH, 1);
+  setTag($('d-tag'), o.now.gH, o.old.gH);
+  $('d-lube').textContent = `${LUBES[o.lube].name} · ${fmt(o.dens, 3)} g/cc`;
+  $('d-qty').textContent = o.qty; $('d-cc').textContent = fmt(o.now.cc, 2); $('d-cph').textContent = fmt(o.cph.total, 1);
+  const note = $('d-note');
+  note.hidden = s !== 'A2';
+  if (s === 'A2') note.textContent = `Excavando ${fmt(o.cph.dig, 1)} ciclos/h y trasladando ${fmt(o.cph.mov, 1)} ciclos/h. Moverse suma ${fmt(o.propelExtra, 0)} g/h frente a operar 100 % estático.`;
+}
+
+function updateCards() {
+  const P = periodHours(state);
+  let max = 0;
+  ORDER.forEach((s) => { max = Math.max(max, C.sys[s].now.gH, C.sys[s].old.gH); });
+  ORDER.forEach((s) => {
+    const o = C.sys[s];
+    $(`sc-${s}-lube`).textContent = `${LUBES[o.lube].name} · ${fmt(o.dens, 3)} g/cc`;
+    $(`sc-${s}-bn`).style.width = (max > 0 ? (o.now.gH / max) * 100 : 0) + '%';
+    $(`sc-${s}-bo`).style.width = (max > 0 ? (o.old.gH / max) * 100 : 0) + '%';
+    $(`sc-${s}-vn`).textContent = fmt(o.now.gH, 1) + ' g/h';
+    $(`sc-${s}-vo`).textContent = fmt(o.old.gH, 1) + ' g/h';
+    const sv = $(`sc-${s}-save`);
+    if (o.now.gH > 0 && o.old.gH > 0) { const p = (o.old.gH - o.now.gH) / o.now.gH; sv.textContent = sgn(p); sv.className = 'num ' + (p > 0 ? 'bad' : 'ok'); } else { sv.textContent = '—'; sv.className = 'num'; }
+    $(`sc-${s}-cph`).textContent = fmt(o.cph.total, 1);
+    $(`sc-${s}-cc`).textContent = fmt(o.now.cc, 2);
+    $(`sc-${s}-kg`).textContent = fmt((o.now.gH * P) / 1000, 0);
+    /* chips de inyectores por tipo y ajuste (condición actual) */
+    const groups = {};
+    state.inj.filter((r) => r.system === s).forEach((r) => {
+      const k = r.now.type + '|' + r.now.adj;
+      (groups[k] = groups[k] || { q: 0, sel: r.now }).q += n(r.qty);
+    });
+    $(`sc-${s}-chips`).innerHTML = Object.values(groups).map((g) =>
+      `<span class="chip" style="--dot:${colorOf(g.sel)}"><i></i><b>${g.q}</b> ${g.sel.type} · ${esc(g.sel.adj)} · ${num2(g.sel.cc)} cc</span>`).join('') || '<span class="pill">Sin inyectores cargados</span>';
+  });
+  Object.keys(T_REF).forEach((k) => {
+    const el = document.querySelector(`[data-tin="${k}"]`);
+    if (document.activeElement !== el) el.value = state.t[k];
+    document.querySelector(`[data-treset="${k}"]`).hidden = state.t[k] === T_REF[k];
+  });
+  const a2 = C.sys.A2;
+  $('sc-A2-note').textContent = `Con ${state.propel} % de traslado, A2 hace ${fmt(a2.cph.total, 1)} ciclos/h. Trasladar agrega ${fmt(a2.propelExtra, 0)} g/h frente a 100 % excavando.`;
+}
+
+
+/* ───────── gráfico de líneas por lubricante ───────── */
+function niceMax(v) { if (!(v > 0)) return 1; const e = Math.pow(10, Math.floor(Math.log10(v))), f = v / e; return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 2.5 ? 2.5 : f <= 5 ? 5 : 10) * e; }
+
+function lineSvg(key, W) {
+  const pm = periodMonths(state), H = 236, L = 50, R = 12, T = 12, B = 40, pw = W - L - R, ph = H - T - B;
+  const val = (m, k) => (m.missing ? null : (C.tot[k][key] * n(m.h)) / 1000);
+  let mx = 0; pm.forEach((m) => ['now', 'old'].forEach((k) => { const v = val(m, k); if (v !== null) mx = Math.max(mx, v); }));
+  const top = niceMax(mx * 1.04), x = (j) => L + (pm.length > 1 ? (pw * j) / (pm.length - 1) : pw / 2), y = (v) => T + ph * (1 - v / top);
+  let g = '';
+  for (let i = 0; i <= 4; i++) { const v = (top * i) / 4, yy = y(v).toFixed(1); g += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" class="lc-g"/><text x="${L - 7}" y="${(+yy + 3.5).toFixed(1)}" text-anchor="end" class="lc-t">${fmt(v, top < 10 ? 1 : 0)}</text>`; }
+  let xl = '', hit = '', guide = '';
+  const stepW = pm.length > 1 ? pw / (pm.length - 1) : pw;
+  pm.forEach((m, j) => {
+    const first = j === 0 || m.m === 0;
+    xl += `<text x="${x(j).toFixed(1)}" y="${H - B + 15}" text-anchor="middle" class="lc-t">${MES[m.m]}</text>` + (first || m.missing ? `<text x="${x(j).toFixed(1)}" y="${H - B + 28}" text-anchor="middle" class="lc-t lc-y">${m.missing ? 'sin dato' : m.y}</text>` : '');
+    const k1 = val(m, 'now'), k2 = val(m, 'old');
+    hit += `<rect class="lc-hit" data-m="${m.i}" x="${(x(j) - stepW / 2).toFixed(1)}" y="${T}" width="${stepW.toFixed(1)}" height="${ph}" fill="transparent"><title>${MES[m.m]} ${m.y} · ${fmt(m.h, 1)} h${k1 === null ? ' · sin dato' : ` · SL-V ${fmt(k1, 0)} kg · FL-1 ${fmt(k2, 0)} kg`}</title></rect>`;
+    if (state.selMonth === m.i) guide = `<line x1="${x(j).toFixed(1)}" x2="${x(j).toFixed(1)}" y1="${T}" y2="${T + ph}" class="lc-sel"/>`;
+  });
+  const path = (k) => { let d = '', pen = false; pm.forEach((m, j) => { const v = val(m, k); if (v === null) { pen = false; return; } d += `${pen ? 'L' : 'M'}${x(j).toFixed(1)} ${y(v).toFixed(1)} `; pen = true; }); return d; };
+  const dots = (k, r, col) => pm.map((m, j) => { const v = val(m, k); return v === null ? '' : `<circle cx="${x(j).toFixed(1)}" cy="${y(v).toFixed(1)}" r="${r}" fill="${col}" stroke="var(--bg-2)" stroke-width="1.5"/>`; }).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Consumo mensual en kg, SL-V actual y FL-1 anterior">${g}${guide}
+    <path d="${path('old')}" fill="none" stroke="var(--steel)" stroke-width="2.4" stroke-dasharray="6 5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="${path('now')}" fill="none" stroke="var(--amber)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    ${dots('old', 3, 'var(--steel)')}${dots('now', 3.6, 'var(--amber)')}${xl}${hit}</svg>`;
+}
+
+function updateLines() {
+  const box = $('lines'); if (!box) return;
+  const pm = periodMonths(state), P = pm.reduce((t, m) => t + n(m.h), 0), t = C.tot;
+  const cw = Math.max(box.clientWidth || 0, 0), cols = cw >= 900 ? 2 : 1;
+  const panelW = Math.max(((cw || 1100) - (cols - 1) * 14) / cols - 30, 280), W = Math.max(panelW, cols === 2 ? pm.length * 19 + 56 : pm.length * 24 + 62);
+  const sm = state.selMonth, selM = sm !== null ? pm.find((m) => m.i === sm) : null;
+  box.innerHTML = ['ultra', 'term'].map((key) => {
+    const sys = ORDER.filter((s) => state.lube[s] === key), kn = (t.now[key] * P) / 1000, ko = (t.old[key] * P) / 1000;
+    let rd = 'Toca un punto del gráfico o una barra para ver el detalle del mes.';
+    if (selM) { const a = (t.now[key] * n(selM.h)) / 1000, b = (t.old[key] * n(selM.h)) / 1000; rd = selM.missing ? `${MES[selM.m]} ${selM.y} · sin dato de horas` : `${MES[selM.m]} ${selM.y} · ${fmt(selM.h, 1)} h · SL-V ${fmt(a, 0)} kg · FL-1 ${fmt(b, 0)} kg · con FL-1 ${b - a < 0 ? '−' : '+'}${fmt(Math.abs(b - a), 0)} kg`; }
+    return `<div class="lpanel"><div class="lhead"><div><h3>${LUBES[key].name}</h3>
+      <p>${sys.length ? 'Sistemas ' + sys.join(', ') : 'Sin sistemas asignados'} · ${fmt(n(state.dens[key]), 3)} g/cc</p></div>
+      <div class="ltot"><b class="${ko > kn ? 'bad' : ''}">${kn > 0 ? sgn((ko - kn) / kn) + ' con FL-1' : '—'}</b><span>${fmt(kn, 0)} kg SL-V · ${fmt(ko, 0)} kg FL-1 en el periodo</span></div></div>
+      <div class="lscroll">${lineSvg(key, W)}</div><p class="note lread">${rd}</p></div>`;
+  }).join('');
+}
+
+function monthKg(m) { return { now: (C.tot.now.g * n(m.h)) / 1000, old: (C.tot.old.g * n(m.h)) / 1000 }; }
+
+function updateMonthly() {
+  const pm = periodMonths(state), vis = new Set(pm.map((m) => m.i));
+  let max = 0;
+  state.months.forEach((m, i) => { if (vis.has(i)) { const k = monthKg(m); max = Math.max(max, k.now, k.old); } });
+  state.months.forEach((m, i) => {
+    const col = $('mc-' + i); col.hidden = !vis.has(i);
+    const k = monthKg(m);
+    $('bs-' + i).style.height = (max > 0 ? (k.now / max) * PLOT : 0) + 'px';
+    $('bf-' + i).style.height = (max > 0 ? (k.old / max) * PLOT : 0) + 'px';
+    $('bs-' + i).classList.toggle('zero', n(m.h) <= 0); $('bf-' + i).classList.toggle('zero', n(m.h) <= 0);
+    col.title = `${MES[m.m]} ${m.y}: ${fmt(m.h, 1)} h · SL-V ${fmt(k.now, 0)} kg · FL-1 ${fmt(k.old, 0)} kg`;
+    col.setAttribute('aria-pressed', String(state.selMonth === i));
+  });
+  const P = pm.reduce((t, m) => t + n(m.h), 0), t = C.tot;
+  const kn = (t.now.g * P) / 1000, ko = (t.old.g * P) / 1000;
+  $('t-h').innerHTML = `${fmt(P, 0)}<small>h</small>`;
+  $('t-now').innerHTML = `${fmt(kn, 0)}<small>kg</small>`;
+  $('t-old').innerHTML = `${fmt(ko, 0)}<small>kg</small>`;
+  $('t-diff').innerHTML = `${ko - kn < 0 ? '−' : '+'}${fmt(Math.abs(ko - kn), 0)}<small>kg</small>`;
+  setTag($('t-tag'), kn, ko);
+  const row = (name, a, b) => `<div class="sr"><span>${name}</span><b class="a num">${fmt(a, 0)}</b><b class="s num">${fmt(b, 0)}</b></div>`;
+  $('t-split').innerHTML = `<div class="sr h"><span>kg en el periodo</span><span>SL-V</span><span>FL-1</span></div>` +
+    row(LUBES.ultra.name, (t.now.ultra * P) / 1000, (t.old.ultra * P) / 1000) + row(LUBES.term.name, (t.now.term * P) / 1000, (t.old.term * P) / 1000);
+  const base = n(state.flujoBase), ultraSinA2 = t.now.ultra - C.sys.A2.now.gH;
+  $('t-flujo').textContent = base > 0
+    ? `Referencia: el flujo Ultra granel usa ${fmt(base, 1)} g/h por pala (${fmt((base * P) / 1000, 0)} kg en el periodo). Esta matriz da ${fmt(t.now.ultra, 0)} g/h con Ultra (${sgn((t.now.ultra - base) / base)}) y ${fmt(ultraSinA2, 0)} g/h si se excluye A2.`
+    : '';
+  const sm = state.selMonth;
+  if (sm !== null && vis.has(sm)) {
+    const m = state.months[sm], k = monthKg(m);
+    $('mread').textContent = `${MES[m.m]} ${m.y} · ${fmt(m.h, 1)} h · SL-V ${fmt(k.now, 0)} kg · FL-1 ${fmt(k.old, 0)} kg · con FL-1 ${k.old - k.now < 0 ? '−' : '+'}${fmt(Math.abs(k.old - k.now), 0)} kg`;
+  } else $('mread').textContent = 'Toca una barra para ver el detalle del mes.';
+  document.querySelectorAll('#period button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.p === state.period)));
+  updateLines();
+}
+
+function paintShovel() {
+  const s = state.sel;
+  ORDER.forEach((k) => {
+    const on = k === s, o = C.sys[k];
+    const share = C.tot.now.g > 0 ? o.now.gH / C.tot.now.g : 0;
+    $('hc-' + k).setAttribute('r', on ? 24 : 19);
+    $('hc-' + k).setAttribute('stroke-width', on ? 6 : 4);
+    $('hd-' + k).setAttribute('r', 5 + share * 14);
+    $('ht-' + k).setAttribute('font-size', on ? 24 : 20);
+    const interval = o.cph.total > 0 ? 60 / o.cph.total : 30;
+    $('ring-' + k).style.setProperty('--dur', clamp(interval / 8, 0.5, 4) + 's');
+  });
+  const fx = $('trackfx');
+  fx.style.setProperty('--tdur', clamp(3 - state.propel / 40, 0.6, 3) + 's');
+  fx.setAttribute('opacity', state.propel > 0 ? 0.85 : 0);
+}
+
+function paintSel() {
+  const s = state.sel;
+  document.querySelectorAll('[data-pick]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.pick === s)));
+  document.querySelectorAll('[data-card]').forEach((c) => c.setAttribute('aria-selected', String(c.dataset.card === s)));
+  if (C) { updateDetail(); paintShovel(); renderLive(); }
+}
+
+/* ───────── inventario ───────── */
+function selHtml(r, k) {
+  const cur = r[k], val = cur.adj === CUSTOM ? 'custom' : cur.type + '|' + cur.adj;
+  const groups = Object.keys(INJ).map((t) => `<optgroup label="${t}">${INJ[t].map((a) =>
+    `<option value="${t}|${a[0]}" ${val === t + '|' + a[0] ? 'selected' : ''}>${a[0]}</option>`).join('')}</optgroup>`).join('');
+  return `<select class="field" data-i="${r.id}" data-f="${k}" aria-label="Tipo y ajuste">${groups}<option value="custom" ${val === 'custom' ? 'selected' : ''}>${CUSTOM}</option></select>`;
+}
+
+function rowHtml(r) {
+  const sysSel = ORDER.map((s) => `<option ${s === r.system ? 'selected' : ''}>${s}</option>`).join('');
+  return `<div class="irow" data-row="${r.id}">
+    <label class="f-name"><span>Componente</span><input class="field" data-i="${r.id}" data-f="name" value="${esc(r.name)}"></label>
+    <label class="f-qty"><span>Cant.</span><input class="field num" type="number" inputmode="numeric" min="0" step="1" data-i="${r.id}" data-f="qty" value="${r.qty}"></label>
+    <label class="f-sys"><span>Sistema</span><select class="field" data-i="${r.id}" data-f="sys">${sysSel}</select></label>
+    <label class="f-now"><span>Actual · tipo y ajuste</span>${selHtml(r, 'now')}</label>
+    <label class="f-nowcc"><span>cc actual</span><input class="field num" type="number" min="0" step="0.01" data-i="${r.id}" data-f="nowcc" value="${r.now.cc}"></label>
+    <label class="f-old"><span>Anterior · tipo y ajuste</span>${selHtml(r, 'old')}</label>
+    <label class="f-oldcc"><span>cc anterior</span><input class="field num" type="number" min="0" step="0.01" data-i="${r.id}" data-f="oldcc" value="${r.old.cc}"></label>
+    <div class="f-sum"><span>cc por ciclo (actual → anterior)</span><b class="num" id="rs-${r.id}"></b></div>
+    <button class="x" data-del="${r.id}" aria-label="Quitar ${esc(r.name)}">${ic('x', 16)}</button></div>`;
+}
+
+function renderInventory() {
+  $('inv').innerHTML = ORDER.map((s) => {
+    const rows = state.inj.filter((r) => r.system === s);
+    return `<details class="panel grp" data-grp="${s}" style="--c:${SYS[s].hue}" ${state.open[s] ? 'open' : ''}>
+      <summary><span class="code">${s}</span><span class="nm">${SYS[s].name}<small id="gl-${s}"></small></span><span class="sum"><b id="gq-${s}"></b><span id="gc-${s}"></span></span><i class="chev"></i></summary>
+      ${rows.length ? `<div class="rows">${rows.map(rowHtml).join('')}</div>` : '<p class="empty">Este sistema no tiene puntos cargados. Agrega el primero o mueve uno desde otro sistema.</p>'}
+      <button class="add" data-add="${s}">${ic('plus', 16)}<span>Agregar punto a ${s}</span></button></details>`;
+  }).join('');
+  updateInvSums();
+}
+
+function updateInvSums() {
+  if (!C) return;
+  state.inj.forEach((r) => {
+    const el = $('rs-' + r.id); if (!el) return;
+    el.textContent = `${fmt(n(r.qty) * n(r.now.cc), 2)} → ${fmt(n(r.qty) * n(r.old.cc), 2)}`;
+  });
+  ORDER.forEach((s) => {
+    const o = C.sys[s]; if (!$('gq-' + s)) return;
+    $('gq-' + s).textContent = `${o.qty} inyectores`;
+    $('gc-' + s).textContent = `${fmt(o.now.cc, 2)} cc/ciclo`;
+    $('gl-' + s).textContent = `${LUBES[o.lube].name} · ${fmt(o.now.gH, 0)} g/h`;
+  });
+}
+
+function invEdit(target, isChange) {
+  const id = +target.dataset.i, f = target.dataset.f, r = state.inj.find((x) => x.id === id);
+  if (!r) return;
+  const v = target.value;
+  if (f === 'name') { if (isChange) { r.name = v; renderLabOptions(); } return; }
+  if (f === 'qty') { r.qty = Math.max(0, parseInt(v, 10) || 0); refresh(); return; }
+  if (f === 'nowcc' || f === 'oldcc') {
+    const k = f === 'nowcc' ? 'now' : 'old';
+    r[k].cc = Math.max(0, parseFloat(v) || 0); r[k].adj = CUSTOM;
+    const sel = document.querySelector(`select[data-i="${id}"][data-f="${k}"]`); if (sel) sel.value = 'custom';
+    refresh(); return;
+  }
+  if ((f === 'now' || f === 'old') && isChange) {
+    if (v === 'custom') r[f].adj = CUSTOM;
+    else { const [t, a] = v.split('|'); r[f] = optOf(t, a); }
+    const cc = document.querySelector(`input[data-i="${id}"][data-f="${f}cc"]`); if (cc) cc.value = r[f].cc;
+    refresh(); return;
+  }
+  if (f === 'sys' && isChange) { r.system = v; state.open[v] = true; renderInventory(); renderLabOptions(); refresh(); }
+}
+
+/* ───────── laboratorio ───────── */
+const labRow = () => state.inj.find((r) => r.id === state.lab.row) || state.inj[0];
+const labSpec = () => INJ[state.lab.type].find((a) => a[0] === state.lab.adj) || INJ[state.lab.type][0];
+
+function syncLabFromRow() {
+  const r = labRow(); if (!r) return;
+  state.lab.type = r.now.type;
+  state.lab.adj = r.now.adj === CUSTOM ? INJ[r.now.type][INJ[r.now.type].length - 1][0] : r.now.adj;
+}
+
+function renderLabOptions() {
+  const sel = $('lab-row');
+  sel.innerHTML = ORDER.map((s) => `<optgroup label="${s} · ${SYS[s].name}">${state.inj.filter((r) => r.system === s).map((r) =>
+    `<option value="${r.id}">${esc(r.name)} · ${r.qty} iny.</option>`).join('')}</optgroup>`).join('');
+  if (!state.inj.find((r) => r.id === state.lab.row) && state.inj[0]) { state.lab.row = state.inj[0].id; syncLabFromRow(); }
+  sel.value = state.lab.row;
+  renderLab();
+}
+
+function renderLab() {
+  $('lab-types').innerHTML = Object.keys(INJ).map((t) => `<button data-lt="${t}" aria-pressed="${t === state.lab.type}">${t}</button>`).join('');
+  $('lab-adjs').innerHTML = INJ[state.lab.type].map((a) =>
+    `<button data-la="${esc(a[0])}" style="--dot:${a[2]}" aria-pressed="${a[0] === state.lab.adj}"><i></i><span>${a[0]}</span><b class="num">${num2(a[1])} cc</b></button>`).join('');
+  $('lab-vis').innerHTML = labSvg(labSpec(), state.lab.type);
+  renderLabDelta();
+}
+
+function renderLabDelta() {
+  const r = labRow(); if (!r || !C) return;
+  const sp = labSpec();
+  const mod = state.inj.map((x) => (x.id === r.id ? { ...x, now: { type: state.lab.type, adj: sp[0], cc: sp[1] } } : x));
+  const P = compute({ ...state, inj: mod });
+  const s = r.system;
+  $('lab-delta').innerHTML = `
+    <div><span class="k">Ahora</span><span>${r.now.type} · ${esc(r.now.adj)} · ${num2(r.now.cc)} cc</span></div>
+    <div><span class="k">Sistema ${s}</span><span class="num">${fmt(C.sys[s].now.gH, 1)} → <b style="color:${SYS[s].hue}">${fmt(P.sys[s].now.gH, 1)} g/h</b></span></div>
+    <div><span class="k">Pala completa</span><span class="num">${fmt(C.tot.now.g, 0)} → <b style="color:${P.tot.now.g > C.tot.now.g ? 'var(--bad)' : 'var(--ok)'}">${fmt(P.tot.now.g, 0)} g/h</b></span></div>
+    <div><span class="k">Con FL-1 sería</span><span class="num">${sgn((P.tot.old.g - P.tot.now.g) / P.tot.now.g)} (${fmt(P.tot.old.g, 0)} g/h)</span></div>`;
+}
+
+function labSvg(spec, type) {
+  const color = spec[2], cc = spec[1], vial = clamp(cc / 8.2, 0.06, 1);
+  const tag = type === 'SL-V' ? 'CAMISA' : type === 'FL-32' ? 'FIJO' : 'HILOS';
+  const ticks = [0.25, 0.5, 0.75].map((f) => `<line x1="226" x2="230" y1="${240 - 120 * f}" y2="${240 - 120 * f}" stroke="#94A3B8"/>`).join('');
+  const threads = [0, 1, 2, 3, 4, 5].map((i) => `<rect x="72" y="${44 + i * 7}" width="36" height="2.5" fill="#7A5210" opacity=".5"/>`).join('');
+  const spring = '<path d="M90 186 l8 6 l-16 6 l16 6 l-16 6 l16 6 l-16 6 l8 6" stroke="#CBD5E1" stroke-width="2" fill="none"/>';
+  return `<svg viewBox="0 0 260 300" role="img" aria-label="Inyector ${type}, ${esc(spec[0])}, ${num2(cc)} cc por disparo">
+    <defs><linearGradient id="brass" x1="0" x2="1"><stop offset="0" stop-color="#B8862B"/><stop offset=".5" stop-color="#F0C05A"/><stop offset="1" stop-color="#9C6F1E"/></linearGradient>
+    <linearGradient id="chrome" x1="0" x2="1"><stop offset="0" stop-color="#6B7A90"/><stop offset=".5" stop-color="#E2E8F0"/><stop offset="1" stop-color="#6B7A90"/></linearGradient>
+    <clipPath id="vialClip"><rect x="196" y="120" width="34" height="120" rx="6"/></clipPath></defs>
+    <rect x="66" y="14" width="48" height="26" rx="5" fill="url(#brass)"/><rect x="72" y="40" width="36" height="46" fill="url(#brass)"/>${threads}
+    <rect x="62" y="86" width="56" height="34" rx="3" fill="${color}" stroke="#0A1220" stroke-width="1.5"/>
+    <text x="90" y="107" text-anchor="middle" font-size="11" font-weight="800" fill="#0A1220" style="font-family:var(--display)">${tag}</text>
+    <rect x="58" y="120" width="64" height="120" rx="6" fill="url(#brass)"/><rect x="76" y="128" width="28" height="104" rx="4" fill="#0A1220"/>
+    <g class="piston"><rect x="80" y="132" width="20" height="46" rx="3" fill="url(#chrome)"/><rect x="83" y="136" width="14" height="6" fill="#4A5568"/></g>${spring}
+    <rect x="122" y="196" width="34" height="16" rx="3" fill="url(#brass)"/><rect x="156" y="192" width="14" height="24" rx="3" fill="url(#chrome)"/>
+    <g class="droplet"><circle cx="176" cy="204" r="${5 + vial * 8}" fill="#F5B324"/></g>
+    <rect x="66" y="240" width="48" height="30" rx="4" fill="url(#chrome)"/><rect x="80" y="270" width="20" height="18" fill="url(#brass)"/>
+    <rect x="196" y="120" width="34" height="120" rx="6" fill="#0A1220" stroke="#2F4367" stroke-width="1.5"/>
+    <g clip-path="url(#vialClip)"><rect x="196" y="${240 - 120 * vial}" width="34" height="${120 * vial}" fill="${color}" opacity=".92"/></g>${ticks}
+    <text x="213" y="262" text-anchor="middle" font-size="20" font-weight="800" fill="#E9EFF8" style="font-family:var(--display)">${num2(cc.toFixed(cc < 0.5 ? 3 : 2))}</text>
+    <text x="213" y="276" text-anchor="middle" font-size="10" fill="#8597B2">cc por disparo</text>
+    <text x="90" y="294" text-anchor="middle" font-size="18" font-weight="800" fill="${color}" style="font-family:var(--display)">${type}</text></svg>`;
+}
+
+/* ───────── turno en vivo ───────── */
+function renderLive() {
+  if (!C) return;
+  const e = sim.elapsed, H = state.hoursDay, f = H > 0 ? e / H : 0;
+  const kn = (C.tot.now.g * e) / 1000, ko = (C.tot.old.g * e) / 1000;
+  const kmax = (Math.max(C.tot.now.g, C.tot.old.g) * H) / 1000 || 1;
+  $('v-bn').style.width = (kn / kmax) * 100 + '%'; $('v-bo').style.width = (ko / kmax) * 100 + '%';
+  $('v-vn').textContent = fmt(kn, 2) + ' kg'; $('v-vo').textContent = fmt(ko, 2) + ' kg';
+  $('v-save').textContent = fmt(ko - kn, 2);
+  $('v-prog').style.width = f * 100 + '%';
+  $('v-time').textContent = `${fmt(e, 2)} h de ${fmt(H, 2)} h`;
+  $('v-cyc').textContent = `${state.sel}: ${Math.floor(C.sys[state.sel].cph.total * e)} ciclos de lubricación`;
+  $('v-sub').textContent = `Un día de operación (${fmt(H, 2)} h) corre en 30 segundos a 1×. Acumula los kilos de grasa de la pala completa.`;
+  const lbl = sim.running ? 'pause' : e > 0 && e < H ? 'cont' : 'start';
+  if (renderLive.lbl !== lbl) {
+    renderLive.lbl = lbl;
+    $('v-play').innerHTML = lbl === 'pause' ? `${ic('pause', 16)}<span>Pausar</span>` : `${ic('play', 16)}<span>${lbl === 'cont' ? 'Continuar' : 'Iniciar turno'}</span>`;
+  }
+  $('flows').hidden = !sim.running;
+}
+
+function tick(t) {
+  if (!sim.running) return;
+  if (!sim.last) sim.last = t;
+  const dt = (t - sim.last) / 1000; sim.last = t;
+  sim.elapsed += dt * (state.hoursDay / 30) * sim.speed;
+  if (sim.elapsed >= state.hoursDay) { sim.elapsed = state.hoursDay; sim.running = false; }
+  renderLive();
+  if (sim.running) requestAnimationFrame(tick);
+}
+function simPlay() { if (sim.running) { sim.running = false; } else { if (sim.elapsed >= state.hoursDay) sim.elapsed = 0; sim.running = true; sim.last = 0; requestAnimationFrame(tick); } renderLive(); }
+function simReset() { sim.running = false; sim.elapsed = 0; renderLive(); }
+
+/* ───────── eventos ───────── */
+function bind() {
+  app.addEventListener('click', (e) => {
+    const t = e.target; let el;
+    if ((el = t.closest('[data-hot]'))) return select(el.dataset.hot);
+    if ((el = t.closest('[data-pick]'))) return select(el.dataset.pick);
+    if ((el = t.closest('[data-t]'))) {
+      const k = el.dataset.t; state.t[k] = Math.max(1, n(state.t[k]) + n(el.dataset.d)); return refresh();
+    }
+    if ((el = t.closest('[data-treset]'))) { state.t[el.dataset.treset] = T_REF[el.dataset.treset]; return refresh(); }
+    if ((el = t.closest('[data-p]'))) { state.period = el.dataset.p; if (state.selMonth !== null && !periodMonths(state).some((m) => m.i === state.selMonth)) state.selMonth = null; return refresh(); }
+    if ((el = t.closest('[data-m]'))) { const i = +el.dataset.m; state.selMonth = state.selMonth === i ? null : i; return updateMonthly(); }
+    if ((el = t.closest('[data-add]'))) {
+      const s = el.dataset.add; const r = { id: ++state.nextId, system: s, name: 'Nuevo punto', qty: 1, now: optOf('SL-V', 'Camisa verde'), old: optOf('FL-1', 'Sin ajuste · 100 %') };
+      state.inj.push(r); state.open[s] = true; renderInventory(); renderLabOptions(); return refresh();
+    }
+    if ((el = t.closest('[data-del]'))) { state.inj = state.inj.filter((r) => r.id !== +el.dataset.del); renderInventory(); renderLabOptions(); return refresh(); }
+    if ((el = t.closest('[data-lt]'))) { state.lab.type = el.dataset.lt; state.lab.adj = INJ[state.lab.type][INJ[state.lab.type].length > 3 ? 2 : 0][0]; return renderLab(); }
+    if ((el = t.closest('[data-la]'))) { state.lab.adj = el.dataset.la; return renderLab(); }
+    if ((el = t.closest('[data-sp]'))) { sim.speed = +el.dataset.sp; document.querySelectorAll('#v-speed button').forEach((b) => b.setAttribute('aria-pressed', String(b === el))); return; }
+    if (t.closest('#lab-fire')) return renderLab();
+    if (t.closest('#lab-apply')) {
+      const r = labRow(); if (!r) return; const sp = labSpec();
+      r.now = { type: state.lab.type, adj: sp[0], cc: sp[1] }; state.open[r.system] = true; renderInventory(); return refresh();
+    }
+    if (t.closest('#v-play')) return simPlay();
+    if (t.closest('#v-reset')) return simReset();
+    if (t.closest('#reset')) return resetAll();
+    if ((el = t.closest('[data-card]'))) { if (!t.closest('input,button,select')) select(el.dataset.card); }
+  });
+
+  app.addEventListener('keydown', (e) => {
+    const el = e.target.closest && e.target.closest('[data-hot]');
+    if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); select(el.dataset.hot); }
+  });
+
+  app.addEventListener('input', (e) => {
+    const t = e.target;
+    if (t.id === 'propel') { state.propel = +t.value; return refresh(); }
+    if (t.dataset.tin) { const v = parseFloat(t.value); if (v > 0) { state.t[t.dataset.tin] = v; refresh(); } return; }
+    if (t.dataset.hin !== undefined) { state.months[+t.dataset.hin].h = Math.max(0, parseFloat(t.value) || 0); return refresh(); }
+    if (t.dataset.i) return invEdit(t, false);
+    if (t.id === 'd-ultra') { state.dens.ultra = n(t.value); return refresh(); }
+    if (t.id === 'd-term') { state.dens.term = n(t.value); return refresh(); }
+    if (t.id === 'p-hd') { state.hoursDay = clamp(n(t.value), 1, 24); return refresh(); }
+    if (t.id === 'p-flujo') { state.flujoBase = n(t.value); return refresh(); }
+  });
+
+  app.addEventListener('change', (e) => {
+    const t = e.target;
+    if (t.dataset.i) return invEdit(t, true);
+    if (t.dataset.ls) { state.lube[t.dataset.ls] = t.value; return refresh(); }
+    if (t.id === 'lab-row') { state.lab.row = +t.value; syncLabFromRow(); return renderLab(); }
+  });
+
+  app.addEventListener('toggle', (e) => {
+    const g = e.target && e.target.dataset && e.target.dataset.grp;
+    if (g) state.open[g] = e.target.open;
+  }, true);
+}
+
+function select(s) { state.sel = s; paintSel(); }
+
+function fillParams() {
+  $('d-ultra').value = state.dens.ultra; $('d-term').value = state.dens.term;
+  $('p-hd').value = state.hoursDay; $('p-flujo').value = state.flujoBase;
+  document.querySelectorAll('[data-ls]').forEach((s) => { s.value = state.lube[s.dataset.ls]; });
+  document.querySelectorAll('[data-hin]').forEach((i) => { i.value = state.months[+i.dataset.hin].h; });
+}
+
+function resetAll() {
+  sim.running = false; sim.elapsed = 0;
+  state = makeState();
+  state.lab.row = state.inj[0].id; syncLabFromRow();
+  fillParams(); renderInventory(); renderLabOptions(); paintSel(); refresh();
+}
+
+function init() {
+  app.innerHTML = skeleton();
+  state.lab.row = state.inj[0].id; syncLabFromRow();
+  bind(); fillParams(); renderInventory();
+  C = compute(state);
+  renderLabOptions(); paintSel(); refresh();
+  let rz; window.addEventListener('resize', () => { clearTimeout(rz); rz = setTimeout(updateLines, 120); });
+}
+init();
+</script>
+</body>
+</html>

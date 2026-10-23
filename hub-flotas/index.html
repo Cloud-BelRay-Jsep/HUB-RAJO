@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es-CL">
+<head>
+  <!-- Versión publicada: al actualizar config.js / hub.js / hub.css, cambia el número ?v= de abajo para que los navegadores descarguen la versión nueva -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>HUB Mina · Bel-Ray Chile × Anglo American</title>
+  <meta name="description" content="Centro de acceso a las soluciones tecnológicas del servicio de lubricación Bel-Ray Chile en las flotas de Mina Rajo, Anglo American Los Bronces.">
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#1A1D20">
+  <link rel="icon" href="assets/img/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="assets/img/favicon-64.png" sizes="64x64" type="image/png">
+  <link rel="icon" href="assets/img/favicon-256.png" sizes="256x256" type="image/png">
+  <link rel="apple-touch-icon" href="assets/img/favicon-256.png">
+
+  <!-- Aplica el tema guardado antes de pintar (evita parpadeo claro/oscuro) -->
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem('hub-theme'); } catch (e) {}
+      if (t !== 'light' && t !== 'dark') {
+        t = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="assets/css/hub.css?v=20261016-4">
+</head>
+<body data-view="home">
+
+  <!-- Iconos (Lucide, licencia ISC) — se reutilizan con <use href="#i-..."> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></symbol>
+      <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></symbol>
+      <symbol id="i-back" viewBox="0 0 24 24"><path d="m12 19-7-7 7-7M19 12H5"/></symbol>
+      <symbol id="i-expand" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></symbol>
+      <symbol id="i-shrink" viewBox="0 0 24 24"><path d="M8 3v3a2 2 0 0 1-2 2H3M21 8h-3a2 2 0 0 1-2-2V3M3 16h3a2 2 0 0 1 2 2v3M16 21v-3a2 2 0 0 1 2-2h3"/></symbol>
+      <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
+      <symbol id="i-caret" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+      <symbol id="i-reload" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M8 16H3v5"/></symbol>
+    </defs>
+  </svg>
+
+  <!-- Fondo: curvas de nivel de un rajo, generadas en assets/js/hub.js -->
+  <svg class="terrain" id="terrain" aria-hidden="true" preserveAspectRatio="xMidYMid slice"></svg>
+
+  <a class="skip" href="#main">Ir al contenido</a>
+
+  <!-- ===================== BARRA SUPERIOR ===================== -->
+  <header class="topbar">
+    <div class="topbar__inner">
+      <div class="brand">
+        <span class="logo-slot" data-logo="client"></span>
+        <span class="brand__x" aria-hidden="true">×</span>
+        <span class="logo-slot" data-logo="partner"></span>
+        <div class="brand__title">
+          <strong id="hub-title">HUB Mina</strong>
+          <span id="hub-subtitle"></span>
+        </div>
+      </div>
+
+      <div class="topbar__right">
+        <div class="status" role="status">
+          <span class="status__dot" aria-hidden="true"></span>
+          <span class="status__text"><b id="status-text">Sistema operativo</b><span id="site-text"></span></span>
+          <time class="status__clock" id="clock"></time>
+        </div>
+        <button class="icon-btn theme-toggle" id="theme-toggle" type="button" aria-label="Cambiar a modo claro">
+          <svg class="ico ico--sun"><use href="#i-sun"/></svg>
+          <svg class="ico ico--moon"><use href="#i-moon"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Selector global de flota -->
+    <nav class="plantbar" aria-label="Seleccionar flota y subflota">
+      <div class="plantbar__track" id="plantbar" role="radiogroup" aria-label="Flota"></div>
+      <!-- Subflotas de la flota elegida (se arma en hub.js) -->
+      <div class="subbar" id="subbar" role="radiogroup" hidden></div>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ===================== PORTADA: MÓDULOS + MATRIZ ===================== -->
+    <section class="home" id="home" aria-labelledby="plant-heading">
+      <div class="intro">
+        <p class="intro__group" id="plant-group" hidden></p>
+        <h1 class="intro__plant" id="plant-heading"><span id="plant-name">Todas las flotas</span></h1>
+        <p class="intro__summary" id="plant-summary"></p>
+      </div>
+
+      <div class="home__grid home__grid--stack">
+        <aside class="matrix" aria-labelledby="matrix-title">
+          <div class="matrix__head">
+            <h2 id="matrix-title">Matriz de cobertura</h2>
+            <p>Dónde está disponible cada servicio. Columnas por subflota, agrupadas bajo su flota. Toca una flota o subflota para filtrar, o una celda con color para abrirla.</p>
+          </div>
+          <div class="matrix__scroll">
+            <table class="matrix__table" id="matrix"></table>
+          </div>
+          <ul class="legend">
+            <li><span class="mark mark--on" aria-hidden="true"></span>Servicio activo</li>
+            <li><span class="mark mark--partial" aria-hidden="true"></span>Avance parcial</li>
+            <li><span class="mark mark--soon" aria-hidden="true"></span>Próximamente</li>
+          </ul>
+        </aside>
+
+        <div class="modules" id="modules"></div>
+      </div>
+    </section>
+
+    <!-- ===================== VISOR DE DASHBOARDS ===================== -->
+    <section class="viewer" id="viewer" aria-labelledby="viewer-title" hidden>
+      <div class="viewer__bar">
+        <button class="btn btn--ghost" id="viewer-back" type="button">
+          <svg class="ico"><use href="#i-back"/></svg><span>Módulos</span>
+        </button>
+        <div class="viewer__title">
+          <span id="viewer-category"></span>
+          <h2 id="viewer-title"></h2>
+          <span class="source" id="viewer-source"></span>
+          <span class="badge badge--partial" id="viewer-status" hidden></span>
+        </div>
+        <div class="viewer__actions">
+          <button class="icon-btn" id="viewer-reload" type="button" aria-label="Recargar dashboard" title="Recargar">
+            <svg class="ico"><use href="#i-reload"/></svg>
+          </button>
+          <a class="icon-btn" id="viewer-external" href="#" target="_blank" rel="noopener" aria-label="Abrir en pestaña nueva" title="Abrir en pestaña nueva">
+            <svg class="ico"><use href="#i-external"/></svg>
+          </a>
+          <button class="btn btn--solid" id="viewer-fullscreen" type="button">
+            <svg class="ico ico--expand"><use href="#i-expand"/></svg>
+            <svg class="ico ico--shrink"><use href="#i-shrink"/></svg>
+            <span>Pantalla completa</span>
+          </button>
+        </div>
+      </div>
+
+      <nav class="viewer__switch" id="module-switch" aria-label="Módulos por pilar"></nav>
+      <div class="viewer__views" id="view-switch" role="tablist" aria-label="Cambiar de tablero" hidden></div>
+
+      <div class="stage" id="stage">
+        <!-- Los iframes se crean en hub.js (uno por módulo, se conservan al cambiar) -->
+        <div class="stage__frames" id="frames"></div>
+
+        <button class="btn btn--solid stage__exit" id="stage-exit" type="button">
+          <svg class="ico"><use href="#i-shrink"/></svg><span>Salir de pantalla completa</span>
+        </button>
+
+        <div class="stage__state stage__loading" id="state-loading" hidden>
+          <div class="loader" aria-hidden="true"><span></span></div>
+          <p><b>Cargando</b>Puede tardar unos segundos la primera vez.</p>
+          <p class="stage__hint" id="loading-hint" hidden>¿Sigue en blanco? Es posible que debas iniciar sesión con tu cuenta Google o que el informe no esté compartido contigo. <a href="#" target="_blank" rel="noopener" id="loading-external">Abrir en pestaña nueva</a></p>
+        </div>
+
+        <div class="stage__state stage__empty" id="state-nourl" hidden>
+          <div class="tape" aria-hidden="true"></div>
+          <h3>Dashboard en preparación</h3>
+          <p>Este módulo aún no tiene un enlace publicado. Cuando esté disponible aparecerá aquí sin que tengas que hacer nada.</p>
+        </div>
+
+        <div class="stage__state stage__empty" id="state-nocoverage" hidden>
+          <div class="tape" aria-hidden="true"></div>
+          <h3 id="nocov-title"></h3>
+          <p id="nocov-text"></p>
+          <div class="nocov__plants" id="nocov-plants"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Servicio de lubricación de <b>Bel-Ray Chile</b> para <b>Anglo American</b>, División Los Bronces, Mina Rajo. Departamento de Confiabilidad.</p>
+  </footer>
+
+  <script src="config.js?v=20261016-4"></script>
+  <script src="assets/js/hub.js?v=20261016-4"></script>
+</body>
+</html>
